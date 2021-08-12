@@ -1,0 +1,5 @@
+bump:
+  recurse: false
+  file: 'lib/solidus_afterpay/version.rb'
+  message: Bump SolidusAfterpay to %{version}
+  tag: true
