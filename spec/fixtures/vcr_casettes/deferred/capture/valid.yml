@@ -1,0 +1,140 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.us-sandbox.afterpay.com/v2/payments/100101782114/capture
+    body:
+      encoding: UTF-8
+      string: '{"token":null,"merchantReference":null,"amount":{"amount":"10.0","currency":"USD"}}'
+    headers:
+      User-Agent:
+      - SolidusAfterpay/0.0.1 (Solidus/3.0.1; Ruby/2.6.6; Merchant/100101481) https://
+      Authorization:
+      - Basic <ENCODED_AUTH_HEADER>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Date:
+      - Mon, 30 Aug 2021 08:48:27 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '2102'
+      Connection:
+      - keep-alive
+      Http-Correlation-Id:
+      - ozupbu4dmlivkgkqcb3hse46pa
+      X-Envoy-Upstream-Service-Time:
+      - '30'
+      Cf-Cache-Status:
+      - DYNAMIC
+      Expect-Ct:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      Set-Cookie:
+      - __cf_bm=fe551c8249f0fc8a8392504329daf6fc7bbdd579-1630313307-1800-Ae5qBfEcUSiF6/f+0sKnwQj1nhuHwASlKgZn2PJtUJEApOuu1pqCfgSwpM209BNW+TXJREQGPXbMqZYmcSE6cLeFYXOlzeI11NSwWBDk12x4;
+        path=/; expires=Mon, 30-Aug-21 09:18:27 GMT; domain=.afterpay.com; HttpOnly;
+        Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 686cc2995adacd2a-FCO
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id" : "100101782114",
+          "token" : "002.6pp2jr5uhgakhroekobc8ei75jsb0aicevunbcudl094dir7",
+          "status" : "APPROVED",
+          "created" : "2021-08-30T08:45:58.336Z",
+          "originalAmount" : {
+            "amount" : "26.24",
+            "currency" : "USD"
+          },
+          "openToCaptureAmount" : {
+            "amount" : "6.24",
+            "currency" : "USD"
+          },
+          "paymentState" : "PARTIALLY_CAPTURED",
+          "merchantReference" : "R735670701",
+          "refunds" : [ ],
+          "orderDetails" : {
+            "consumer" : {
+              "phoneNumber" : "",
+              "givenNames" : "Christian",
+              "surname" : "Rimondi",
+              "email" : "admin@example.com"
+            },
+            "billing" : {
+              "name" : "Christian Rimondi",
+              "line1" : "1313 Broadway",
+              "line2" : "",
+              "area1" : "New York",
+              "region" : "NY",
+              "postcode" : "10001",
+              "phoneNumber" : "12524264421"
+            },
+            "shipping" : {
+              "name" : "Christian Rimondi",
+              "line1" : "1313 Broadway",
+              "line2" : "",
+              "area1" : "New York",
+              "region" : "NY",
+              "postcode" : "10001",
+              "phoneNumber" : "12524264421"
+            },
+            "courier" : { },
+            "items" : [ {
+              "name" : "Solidus T-Shirt",
+              "sku" : "SOL-00003",
+              "quantity" : 1,
+              "price" : {
+                "amount" : "19.99",
+                "currency" : "USD"
+              }
+            } ],
+            "discounts" : [ ]
+          },
+          "events" : [ {
+            "id" : "1xRLxAGSlrW6GphmzOiNqLgUrKA",
+            "created" : "2021-08-30T08:46:37.409Z",
+            "expires" : "2021-09-06T08:46:37.407Z",
+            "type" : "AUTH_APPROVED",
+            "amount" : {
+              "amount" : "26.24",
+              "currency" : "USD"
+            },
+            "paymentEventMerchantReference" : null
+          }, {
+            "id" : "1xRMAnRV2coOinONSRiP64gecUd",
+            "created" : "2021-08-30T08:48:26.776Z",
+            "expires" : null,
+            "type" : "CAPTURED",
+            "amount" : {
+              "amount" : "10.00",
+              "currency" : "USD"
+            },
+            "paymentEventMerchantReference" : null
+          }, {
+            "id" : "1xRMAxMjwp4lx8EsOONREc3qyq2",
+            "created" : "2021-08-30T08:48:27.278Z",
+            "expires" : null,
+            "type" : "CAPTURED",
+            "amount" : {
+              "amount" : "10.00",
+              "currency" : "USD"
+            },
+            "paymentEventMerchantReference" : null
+          } ]
+        }
+  recorded_at: Mon, 30 Aug 2021 08:48:27 GMT
+recorded_with: VCR 6.0.0

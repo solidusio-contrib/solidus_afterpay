@@ -68,42 +68,68 @@ RSpec.describe SolidusAfterpay::Gateway do
     subject(:response) { gateway.capture(amount, response_code, gateway_options) }
 
     let(:order_token) { '002.nt7e0ioqj00fh0ua1nbqcj6vcn9obtfsglqvrj9ijpo3edfc' }
+    let(:deferred?) { false }
     let(:payment_source) { build(:afterpay_payment_source, token: order_token) }
-    let(:payment) { build(:afterpay_payment, source: payment_source) }
+    let(:payment_method) { build(:afterpay_payment_method, preferred_deferred: deferred?) }
+    let(:payment) { build(:afterpay_payment, source: payment_source, payment_method: payment_method) }
 
     let(:amount) { 1000 }
-    let(:response_code) { nil }
-    let(:gateway_options) { { originator: payment } }
+    let(:response_code) { '100101782114' }
+    let(:gateway_options) { { originator: payment, currency: 'USD' } }
 
-    context 'with valid params', vcr: 'capture/valid' do
-      it 'captures the afterpay payment with the order_token' do
-        is_expected.to be_success
+    context 'with the immediate flow' do
+      context 'with valid params', vcr: 'immediate/capture/valid' do
+        it 'captures the afterpay payment with the order_token' do
+          is_expected.to be_success
+        end
+      end
+
+      context 'with an invalid token', vcr: 'immediate/capture/invalid' do
+        let(:order_token) { 'INVALID_TOKEN' }
+
+        it 'returns an unsuccesfull response' do
+          is_expected.not_to be_success
+        end
+
+        it 'returns the error message from Afterpay in the response' do
+          expect(response.message).to eq('Cannot complete payment, expired or invalid token.')
+        end
+      end
+
+      context 'with an invalid credit card', vcr: 'immediate/capture/declined_payment' do
+        let(:order_token) { '002.kj16plsn63eqfacueg767cp7l34e9ph5tms4ql14o2iid7l1' }
+
+        it 'returns an unsuccesfull response' do
+          is_expected.not_to be_success
+        end
+
+        it 'returns the error message from Afterpay in the response' do
+          expect(response.message).to eq(
+            'Payment declined. Please contact the Afterpay Customer Service team for more information.'
+          )
+        end
       end
     end
 
-    context 'with an invalid token', vcr: 'capture/invalid' do
-      let(:order_token) { 'INVALID_TOKEN' }
+    context 'with the deferred flow' do
+      let(:deferred?) { true }
 
-      it 'returns an unsuccesfull response' do
-        is_expected.not_to be_success
+      context 'with valid params', vcr: 'deferred/capture/valid' do
+        it 'captures the afterpay payment with the order_id' do
+          is_expected.to be_success
+        end
       end
 
-      it 'returns the error message from Afterpay in the response' do
-        expect(response.message).to eq('Cannot complete payment, expired or invalid token.')
-      end
-    end
+      context 'with an invalid payment ID', vcr: 'deferred/capture/invalid' do
+        let(:response_code) { 'INVALID_RESPONSE_CODE' }
 
-    context 'with an invalid credit card', vcr: 'capture/declined_payment' do
-      let(:order_token) { '002.kj16plsn63eqfacueg767cp7l34e9ph5tms4ql14o2iid7l1' }
+        it 'returns an unsuccesfull response' do
+          is_expected.not_to be_success
+        end
 
-      it 'returns an unsuccesfull response' do
-        is_expected.not_to be_success
-      end
-
-      it 'returns the error message from Afterpay in the response' do
-        expect(response.message).to eq(
-          'Payment declined. Please contact the Afterpay Customer Service team for more information.'
-        )
+        it 'returns the error message from Afterpay in the response' do
+          expect(response.message).to eq('Afterpay payment ID not found.')
+        end
       end
     end
   end

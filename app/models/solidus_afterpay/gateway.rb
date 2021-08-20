@@ -30,12 +30,14 @@ module SolidusAfterpay
       ActiveMerchant::Billing::Response.new(false, message)
     end
 
-    def capture(_amount, _response_code, gateway_options)
-      payment_source = gateway_options[:originator].payment_source
+    def capture(amount, response_code, gateway_options)
+      payment_method = gateway_options[:originator].payment_method
 
-      response = ::Afterpay::API::Payment::Capture.call(
-        payment: ::Afterpay::Components::Payment.new(token: payment_source.token)
-      )
+      response = if payment_method.preferred_deferred
+                   deferred_capture(amount, response_code, gateway_options)
+                 else
+                   immediate_capture(amount, response_code, gateway_options)
+                 end
       result = response.body
 
       raise ::Afterpay::BaseError, I18n.t('solidus_afterpay.payment_declined') if result.status != 'APPROVED'
@@ -88,6 +90,28 @@ module SolidusAfterpay
       ActiveMerchant::Billing::Response.new(true, 'Checkout created', result)
     rescue ::Afterpay::BaseError => e
       ActiveMerchant::Billing::Response.new(false, e.message)
+    end
+
+    private
+
+    def immediate_capture(_amount, _response_code, gateway_options)
+      payment_source = gateway_options[:originator].payment_source
+
+      ::Afterpay::API::Payment::Capture.call(
+        payment: ::Afterpay::Components::Payment.new(token: payment_source.token)
+      )
+    end
+
+    def deferred_capture(amount, response_code, gateway_options)
+      ::Afterpay::API::Payment::DeferredCapture.call(
+        order_id: response_code,
+        payment: ::Afterpay::Components::Payment.new(
+          amount: ::Afterpay::Components::Money.new(
+            amount: Money.from_cents(amount).amount.to_s,
+            currency: gateway_options[:currency]
+          )
+        )
+      )
     end
   end
 end
