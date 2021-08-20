@@ -13,12 +13,54 @@ RSpec.describe SolidusAfterpay::Gateway do
   describe '#authorize' do
     subject(:response) { gateway.authorize(amount, payment_source, gateway_options) }
 
+    let(:order_token) { '002.m6d9jkrtv1p0j4jqslklhfq9k4nl54jo2530d58kf6snpqq1' }
+    let(:deferred?) { false }
+    let(:payment_method) { build(:afterpay_payment_method, preferred_deferred: deferred?) }
+
     let(:amount) { 1000 }
-    let(:payment_source) { build(:afterpay_payment_source) }
+    let(:payment_source) { build(:afterpay_payment_source, token: order_token, payment_method: payment_method) }
     let(:gateway_options) { {} }
 
-    it 'returns a successful response' do
-      is_expected.to be_success
+    context 'with the immediate flow' do
+      it 'returns a successful response' do
+        is_expected.to be_success
+      end
+    end
+
+    context 'with the deferred flow' do
+      let(:deferred?) { true }
+
+      context 'with valid params', vcr: 'deferred/authorize/valid' do
+        it 'authorize the afterpay payment with the order_token' do
+          is_expected.to be_success
+        end
+      end
+
+      context 'with an invalid token', vcr: 'deferred/authorize/invalid' do
+        let(:order_token) { 'INVALID_TOKEN' }
+
+        it 'returns an unsuccesfull response' do
+          is_expected.not_to be_success
+        end
+
+        it 'returns the error message from Afterpay in the response' do
+          expect(response.message).to eq('Cannot complete payment, expired or invalid token.')
+        end
+      end
+
+      context 'with an invalid credit card', vcr: 'deferred/authorize/declined_payment' do
+        let(:order_token) { '002.ijlqnvko1o4ou45uabplrl9pqao8u2v52njs2972r24hje65' }
+
+        it 'returns an unsuccesfull response' do
+          is_expected.not_to be_success
+        end
+
+        it 'returns the error message from Afterpay in the response' do
+          expect(response.message).to eq(
+            'Payment declined. Please contact the Afterpay Customer Service team for more information.'
+          )
+        end
+      end
     end
   end
 

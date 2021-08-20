@@ -1,0 +1,120 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.us-sandbox.afterpay.com/v2/payments/auth
+    body:
+      encoding: UTF-8
+      string: '{"token":"002.ijlqnvko1o4ou45uabplrl9pqao8u2v52njs2972r24hje65","merchantReference":null,"amount":null}'
+    headers:
+      User-Agent:
+      - SolidusAfterpay/0.0.1 (Solidus/3.0.1; Ruby/2.6.6; Merchant/100101481) https://
+      Authorization:
+      - Basic <ENCODED_AUTH_HEADER>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 402
+      message: Payment Required
+    headers:
+      Date:
+      - Thu, 26 Aug 2021 16:49:57 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '1560'
+      Connection:
+      - keep-alive
+      Http-Correlation-Id:
+      - gnficlh6g2sky5fijzcyzjocta
+      X-Envoy-Upstream-Service-Time:
+      - '253'
+      Cf-Cache-Status:
+      - DYNAMIC
+      Expect-Ct:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      Set-Cookie:
+      - __cf_bm=31c51aeac48376bb2857541c183d592f37a9981f-1629996597-1800-AfkfX/fwd9Fk1ug6hM4M7hUbmXnPGPs/TsRRzQpRiOKMXHPB+aSZGP/W8kEANiDEwlrN4o7uSWrXdx8PhQ2U8xuv304GDZXXaLoY1qOwSYCk;
+        path=/; expires=Thu, 26-Aug-21 17:19:57 GMT; domain=.afterpay.com; HttpOnly;
+        Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 684e8e68ba79cd26-FCO
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id" : "100101773585",
+          "token" : "002.ijlqnvko1o4ou45uabplrl9pqao8u2v52njs2972r24hje65",
+          "status" : "DECLINED",
+          "created" : "2021-08-26T16:47:46.907Z",
+          "originalAmount" : {
+            "amount" : "26.24",
+            "currency" : "USD"
+          },
+          "openToCaptureAmount" : {
+            "amount" : "26.24",
+            "currency" : "USD"
+          },
+          "paymentState" : "AUTH_DECLINED",
+          "merchantReference" : "R735670701",
+          "refunds" : [ ],
+          "orderDetails" : {
+            "consumer" : {
+              "phoneNumber" : "",
+              "givenNames" : "Christian",
+              "surname" : "Rimondi",
+              "email" : "admin@example.com"
+            },
+            "billing" : {
+              "name" : "Christian Rimondi",
+              "line1" : "1313 Broadway",
+              "line2" : "",
+              "area1" : "New York",
+              "region" : "NY",
+              "postcode" : "10001",
+              "phoneNumber" : "12524264421"
+            },
+            "shipping" : {
+              "name" : "Christian Rimondi",
+              "line1" : "1313 Broadway",
+              "line2" : "",
+              "area1" : "New York",
+              "region" : "NY",
+              "postcode" : "10001",
+              "phoneNumber" : "12524264421"
+            },
+            "courier" : { },
+            "items" : [ {
+              "name" : "Solidus T-Shirt",
+              "sku" : "SOL-00003",
+              "quantity" : 1,
+              "price" : {
+                "amount" : "19.99",
+                "currency" : "USD"
+              }
+            } ],
+            "discounts" : [ ]
+          },
+          "events" : [ {
+            "id" : "1xH0Ei1o80ZUK4uYjCo3FMilGdK",
+            "created" : "2021-08-26T16:49:56.938Z",
+            "expires" : null,
+            "type" : "AUTH_DECLINED",
+            "amount" : {
+              "amount" : "26.24",
+              "currency" : "USD"
+            },
+            "paymentEventMerchantReference" : null
+          } ]
+        }
+  recorded_at: Thu, 26 Aug 2021 16:49:57 GMT
+recorded_with: VCR 6.0.0
