@@ -4,6 +4,8 @@ require 'afterpay'
 
 module SolidusAfterpay
   class Gateway
+    VOIDABLE_STATUSES = ['AUTH_APPROVED', 'PARTIALLY_CAPTURED'].freeze
+
     def initialize(options)
       ::Afterpay.configure do |config|
         config.merchant_id = options[:merchant_id]
@@ -109,6 +111,12 @@ module SolidusAfterpay
       ActiveMerchant::Billing::Response.new(true, 'Checkout created', result)
     rescue ::Afterpay::BaseError => e
       ActiveMerchant::Billing::Response.new(false, e.message)
+    end
+
+    def find_payment(order_id:)
+      ::Afterpay::API::Payment::Find.call(order_id: order_id).body
+    rescue ::Afterpay::BaseError
+      nil
     end
 
     private

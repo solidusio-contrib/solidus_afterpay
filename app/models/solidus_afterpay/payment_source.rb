@@ -7,11 +7,17 @@ module SolidusAfterpay
     validates :token, presence: true
 
     def actions
-      %w[capture credit]
+      %w[capture void credit]
     end
 
-    def can_void?(_payment)
-      false
+    def can_void?(payment)
+      payment_method = payment.payment_method
+
+      return false unless payment_method.preferred_deferred
+
+      payment_state = payment_method.gateway.find_payment(order_id: payment.response_code).try(:[], :paymentState)
+
+      ::SolidusAfterpay::Gateway::VOIDABLE_STATUSES.include?(payment_state)
     end
   end
 end

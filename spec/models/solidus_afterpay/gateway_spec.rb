@@ -323,4 +323,24 @@ RSpec.describe SolidusAfterpay::Gateway do
       end
     end
   end
+
+  describe '#find_payment' do
+    subject(:response) { gateway.find_payment(order_id: order_id) }
+
+    let(:order_id) { '100101785223' }
+
+    context 'with valid params', vcr: 'find_payment/valid' do
+      it 'retrieves the Afterpay payment' do
+        expect(response).to include('id' => order_id)
+      end
+    end
+
+    context 'with an invalid params', vcr: 'find_payment/invalid' do
+      let(:order_id) { 'INVALID_ORDER_ID' }
+
+      it 'returns nil' do
+        is_expected.to be_nil
+      end
+    end
+  end
 end
