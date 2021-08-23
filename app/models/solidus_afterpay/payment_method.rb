@@ -18,8 +18,14 @@ module SolidusAfterpay
       'afterpay'
     end
 
-    def try_void(_payment)
-      false
+    def try_void(payment)
+      return false unless payment.payment_source.can_void?(payment)
+
+      response = void(payment.response_code, { originator: payment, currency: payment.currency })
+
+      return false unless response.success?
+
+      response
     end
   end
 end
