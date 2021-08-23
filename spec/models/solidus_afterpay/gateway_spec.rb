@@ -251,15 +251,44 @@ RSpec.describe SolidusAfterpay::Gateway do
   describe '#void' do
     subject(:response) { gateway.void(response_code, gateway_options) }
 
-    let(:response_code) { '100101768366' }
-    let(:gateway_options) { {} }
+    let(:deferred?) { false }
+    let(:amount) { 10 }
+    let(:payment_method) { build(:afterpay_payment_method, preferred_deferred: deferred?) }
+    let(:payment) { build(:afterpay_payment, payment_method: payment_method, amount: amount) }
 
-    it 'returns an unsuccessful response' do
-      is_expected.not_to be_success
+    let(:response_code) { '100101785223' }
+    let(:gateway_options) { { originator: payment, currency: 'USD' } }
+
+    context 'with the immediate flow' do
+      it 'returns an unsuccessful response' do
+        is_expected.not_to be_success
+      end
+
+      it 'returns the error message from Afterpay in the response' do
+        expect(response.message).to eq("Transaction can't be voided")
+      end
     end
 
-    it 'returns the error message from Afterpay in the response' do
-      expect(response.message).to eq("Transaction can't be voided")
+    context 'with the deferred flow' do
+      let(:deferred?) { true }
+
+      context 'with valid params', vcr: 'deferred/void/valid' do
+        it 'voids the payment using the response_code' do
+          is_expected.to be_success
+        end
+      end
+
+      context 'with an invalid response_code', vcr: 'deferred/void/invalid' do
+        let(:response_code) { 'INVALID_RESPONSE_CODE' }
+
+        it 'returns an unsuccesfull response' do
+          is_expected.not_to be_success
+        end
+
+        it 'returns the error message from Afterpay in the response' do
+          expect(response.message).to eq('Afterpay payment ID not found.')
+        end
+      end
     end
   end
 

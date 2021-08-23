@@ -73,8 +73,27 @@ module SolidusAfterpay
       ActiveMerchant::Billing::Response.new(false, e.message)
     end
 
-    def void(_response_code, _gateway_options)
-      ActiveMerchant::Billing::Response.new(false, "Transaction can't be voided")
+    def void(response_code, gateway_options)
+      payment_method = gateway_options[:originator].payment_method
+
+      unless payment_method.preferred_deferred
+        return ActiveMerchant::Billing::Response.new(false, "Transaction can't be voided")
+      end
+
+      response = ::Afterpay::API::Payment::Void.call(
+        order_id: response_code,
+        payment: ::Afterpay::Components::Payment.new(
+          amount: ::Afterpay::Components::Money.new(
+            amount: gateway_options[:originator].amount.to_s,
+            currency: gateway_options[:currency]
+          )
+        )
+      )
+      result = response.body
+
+      ActiveMerchant::Billing::Response.new(true, 'Transaction voided', result, authorization: result.id)
+    rescue ::Afterpay::BaseError => e
+      ActiveMerchant::Billing::Response.new(false, e.message)
     end
 
     def create_checkout(order, gateway_options)
