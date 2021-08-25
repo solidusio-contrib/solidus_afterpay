@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
-Spree::Core::Engine.routes.draw do
-  # Add your extension routes here
+SolidusAfterpay::Engine.routes.draw do
+  get '/callbacks/confirm', to: '/solidus_afterpay/callbacks#confirm'
+  get '/callbacks/cancel', to: '/solidus_afterpay/callbacks#cancel'
 end
