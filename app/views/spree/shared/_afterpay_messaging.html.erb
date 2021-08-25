@@ -1,0 +1,13 @@
+<% content_for :head do %>
+  <script
+    src="https://js.afterpay.com/afterpay-1.x.js"
+    data-analytics-enabled
+    async
+    <% if max %>
+    data-min="<%= min %>"
+    data-max="<%= max %>"
+    <% end %>
+  ></script>
+<% end %>
+
+<%= content_tag("afterpay-placement", nil, data: data) %>
