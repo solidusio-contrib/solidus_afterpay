@@ -61,5 +61,20 @@ module SolidusAfterpay
     def void(_response_code, _gateway_options)
       ActiveMerchant::Billing::Response.new(false, "Transaction can't be voided")
     end
+
+    def create_checkout(order, gateway_options)
+      response = ::Afterpay::API::Order::Create.call(
+        order: SolidusAfterpay::OrderComponentBuilder.new(
+          order: order,
+          redirect_confirm_url: gateway_options[:redirect_confirm_url],
+          redirect_cancel_url: gateway_options[:redirect_cancel_url]
+        ).call
+      )
+      result = response.body
+
+      ActiveMerchant::Billing::Response.new(true, 'Checkout created', result)
+    rescue ::Afterpay::BaseError => e
+      ActiveMerchant::Billing::Response.new(false, e.message)
+    end
   end
 end

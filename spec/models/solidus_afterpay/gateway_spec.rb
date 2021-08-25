@@ -152,4 +152,36 @@ RSpec.describe SolidusAfterpay::Gateway do
       expect(response.message).to eq("Transaction can't be voided")
     end
   end
+
+  describe '#create_checkout' do
+    subject(:response) { gateway.create_checkout(order, gateway_options) }
+
+    let(:redirect_confirm_url) { 'https://merchantsite.com/confirm' }
+    let(:redirect_cancel_url) { 'https://merchantsite.com/cancel' }
+
+    let(:order) { build(:order_with_line_items) }
+    let(:gateway_options) { { redirect_confirm_url: redirect_confirm_url, redirect_cancel_url: redirect_cancel_url } }
+
+    context 'with valid params', vcr: 'create_checkout/valid' do
+      it 'creates the checkout' do
+        is_expected.to be_success
+      end
+
+      it 'returns the order_token' do
+        expect(response.params).to include('token')
+      end
+    end
+
+    context 'with an invalid params', vcr: 'create_checkout/invalid' do
+      let(:redirect_confirm_url) { 'INVALID_URL' }
+
+      it 'returns an unsuccesfull response' do
+        is_expected.not_to be_success
+      end
+
+      it 'returns the error message from Afterpay in the response' do
+        expect(response.message).to eq('merchant.redirectConfirmUrl must be a valid URL')
+      end
+    end
+  end
 end

@@ -1,0 +1,65 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.us-sandbox.afterpay.com/v2/checkouts
+    body:
+      encoding: UTF-8
+      string: '{"amount":{"amount":"110.0","currency":"USD"},"consumer":{"phoneNumber":null,"givenNames":"John","surname":"Von
+        Doe","email":"email1@example.com"},"billing":{"name":"John Von Doe","line1":"PO
+        Box 1337","line2":"Northwest","area1":"Herndon","area2":null,"region":"AL","postcode":"10001","countryCode":null,"phoneNumber":"555-555-0199"},"shipping":{"name":"John
+        Von Doe","line1":"A Different Road","line2":"Northwest","area1":"Herndon","area2":null,"region":"AL","postcode":"10002","countryCode":null,"phoneNumber":"555-555-0199"},"courier":null,"items":[{"name":"Product
+        #1 - 4517","sku":"SKU-1","pageUrl":null,"imageUrl":null,"quantity":1,"price":{"amount":"10.0","currency":"USD"},"categories":null,"estimatedShipmentDate":null}],"discounts":null,"merchant":{"redirectConfirmUrl":"INVALID_URL","redirectCancelUrl":"https://merchantsite.com/cancel"},"paymentType":null,"merchantReference":"R454538030","taxAmount":null,"shippingAmount":null}'
+    headers:
+      User-Agent:
+      - SolidusAfterpay/0.0.1 (Solidus/3.0.1; Ruby/2.6.6; Merchant/100101481) https://
+      Authorization:
+      - Basic <ENCODED_AUTH_HEADER>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 422
+      message: Unprocessable Entity
+    headers:
+      Date:
+      - Wed, 25 Aug 2021 14:56:00 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '161'
+      Connection:
+      - keep-alive
+      Http-Correlation-Id:
+      - wcojzlfj2rfkqm4w6ayrvuynnq
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Cf-Cache-Status:
+      - DYNAMIC
+      Expect-Ct:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      Set-Cookie:
+      - __cf_bm=458888e7b4f03e70f12df97baec05158b5a76852-1629903360-1800-AQkZgFhWlLVhjIocg7r7deIfz1lAUyyEaisx9bXg9Ocwas501JwTxgqXWs2R9DAqrFXrRyfdIntHiY5D3U7kGXrmhCgTFYrDxPixPtLPZ+1b;
+        path=/; expires=Wed, 25-Aug-21 15:26:00 GMT; domain=.afterpay.com; HttpOnly;
+        Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 6845aa213deecd3a-FCO
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "errorCode" : "invalid_object",
+          "errorId" : "6a7240c88a0d76d5",
+          "message" : "merchant.redirectConfirmUrl must be a valid URL",
+          "httpStatusCode" : 422
+        }
+  recorded_at: Wed, 25 Aug 2021 14:56:00 GMT
+recorded_with: VCR 6.0.0
