@@ -38,5 +38,24 @@ module SolidusAfterpay
 
       capture(amount, result.authorization, gateway_options)
     end
+
+    def credit(amount, response_code, gateway_options)
+      response = ::Afterpay::API::Payment::Refund.call(
+        order_id: response_code,
+        refund: ::Afterpay::Components::Refund.new(
+          amount: ::Afterpay::Components::Money.new(
+            amount: Money.from_cents(amount).amount.to_s,
+            currency: gateway_options[:originator].payment.currency
+          ),
+          merchant_reference: gateway_options[:originator].payment.id
+        )
+      )
+      result = response.body
+
+      ActiveMerchant::Billing::Response.new(true, "Transaction Credited with #{amount}", result,
+        authorization: result.refundId)
+    rescue ::Afterpay::BaseError => e
+      ActiveMerchant::Billing::Response.new(false, e.message)
+    end
   end
 end

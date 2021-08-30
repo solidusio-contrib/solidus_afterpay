@@ -108,4 +108,33 @@ RSpec.describe SolidusAfterpay::Gateway do
       end
     end
   end
+
+  describe '#credit' do
+    subject(:response) { gateway.credit(amount, response_code, gateway_options) }
+
+    let(:payment) { build(:afterpay_payment) }
+    let(:refund) { build(:refund, payment: payment) }
+
+    let(:amount) { 1000 }
+    let(:response_code) { '100101768366' }
+    let(:gateway_options) { { originator: refund } }
+
+    context 'with valid params', vcr: 'credit/valid' do
+      it 'refunds the amount using the response_code' do
+        is_expected.to be_success
+      end
+    end
+
+    context 'with an invalid response_code', vcr: 'credit/invalid' do
+      let(:response_code) { 'INVALID_RESPONSE_CODE' }
+
+      it 'returns an unsuccesfull response' do
+        is_expected.not_to be_success
+      end
+
+      it 'returns the error message from Afterpay in the response' do
+        expect(response.message).to eq('Afterpay payment ID not found.')
+      end
+    end
+  end
 end
