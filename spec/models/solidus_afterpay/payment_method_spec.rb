@@ -20,4 +20,12 @@ RSpec.describe SolidusAfterpay::PaymentMethod, type: :model do
 
     it { is_expected.to eq('afterpay') }
   end
+
+  describe "#try_void" do
+    subject { payment_method.try_void(payment) }
+
+    let(:payment) { build(:afterpay_payment) }
+
+    it { is_expected.to be(false) }
+  end
 end

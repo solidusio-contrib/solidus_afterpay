@@ -16,5 +16,9 @@ module SolidusAfterpay
     def partial_name
       'afterpay'
     end
+
+    def try_void(_payment)
+      false
+    end
   end
 end
