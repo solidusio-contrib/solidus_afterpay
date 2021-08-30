@@ -137,4 +137,19 @@ RSpec.describe SolidusAfterpay::Gateway do
       end
     end
   end
+
+  describe '#void' do
+    subject(:response) { gateway.void(response_code, gateway_options) }
+
+    let(:response_code) { '100101768366' }
+    let(:gateway_options) { {} }
+
+    it 'returns an unsuccessful response' do
+      is_expected.not_to be_success
+    end
+
+    it 'returns the error message from Afterpay in the response' do
+      expect(response.message).to eq("Transaction can't be voided")
+    end
+  end
 end

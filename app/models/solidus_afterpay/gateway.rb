@@ -57,5 +57,9 @@ module SolidusAfterpay
     rescue ::Afterpay::BaseError => e
       ActiveMerchant::Billing::Response.new(false, e.message)
     end
+
+    def void(_response_code, _gateway_options)
+      ActiveMerchant::Billing::Response.new(false, "Transaction can't be voided")
+    end
   end
 end
