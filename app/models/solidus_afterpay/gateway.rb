@@ -31,5 +31,12 @@ module SolidusAfterpay
     rescue ::Afterpay::BaseError => e
       ActiveMerchant::Billing::Response.new(false, e.message)
     end
+
+    def purchase(amount, payment_source, gateway_options)
+      result = authorize(amount, payment_source, gateway_options)
+      return result unless result.success?
+
+      capture(amount, result.authorization, gateway_options)
+    end
   end
 end
