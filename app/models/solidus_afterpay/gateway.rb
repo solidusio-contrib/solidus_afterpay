@@ -16,5 +16,20 @@ module SolidusAfterpay
     def authorize(_amount, _payment_source, _gateway_options)
       ActiveMerchant::Billing::Response.new(true, 'Transaction approved')
     end
+
+    def capture(_amount, _response_code, gateway_options)
+      payment_source = gateway_options[:originator].payment_source
+
+      response = ::Afterpay::API::Payment::Capture.call(
+        payment: ::Afterpay::Components::Payment.new(token: payment_source.token)
+      )
+      result = response.body
+
+      raise ::Afterpay::BaseError, I18n.t('solidus_afterpay.payment_declined') if result.status != 'APPROVED'
+
+      ActiveMerchant::Billing::Response.new(true, 'Transaction captured', result, authorization: result.id)
+    rescue ::Afterpay::BaseError => e
+      ActiveMerchant::Billing::Response.new(false, e.message)
+    end
   end
 end

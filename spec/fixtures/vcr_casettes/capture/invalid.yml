@@ -1,0 +1,61 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.us-sandbox.afterpay.com/v2/payments/capture
+    body:
+      encoding: UTF-8
+      string: '{"token":"INVALID_TOKEN","merchantReference":null,"amount":null}'
+    headers:
+      User-Agent:
+      - SolidusAfterpay/0.0.1 (Solidus/3.0.1; Ruby/2.6.6; Merchant/100101481) https://
+      Authorization:
+      - Basic <ENCODED_AUTH_HEADER>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 402
+      message: Payment Required
+    headers:
+      Date:
+      - Wed, 25 Aug 2021 14:55:10 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '163'
+      Connection:
+      - keep-alive
+      Http-Correlation-Id:
+      - 2m54dxammo5yivs22xpqy5ymp4
+      X-Envoy-Upstream-Service-Time:
+      - '65'
+      Cf-Cache-Status:
+      - DYNAMIC
+      Expect-Ct:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      Set-Cookie:
+      - __cf_bm=59dde99429147353c566297400188a205dd1c569-1629903310-1800-AW+vk29NN4QPXNzSzYsYy0du6wT4ILfy1NY9yfxHlmnG/9bR/OuBxCflDZ2b/f2kBF4GjBQ3d9y4Tov4NdIy990scvazqSnXwt/2X2iaTMBt;
+        path=/; expires=Wed, 25-Aug-21 15:25:10 GMT; domain=.afterpay.com; HttpOnly;
+        Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 6845a8e67fc5cd42-FCO
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "errorCode" : "invalid_token",
+          "errorId" : "da76c8c79d41e92b",
+          "message" : "Cannot complete payment, expired or invalid token.",
+          "httpStatusCode" : 402
+        }
+  recorded_at: Wed, 25 Aug 2021 14:55:10 GMT
+recorded_with: VCR 6.0.0
