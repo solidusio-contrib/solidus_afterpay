@@ -12,5 +12,9 @@ module SolidusAfterpay
         config.user_agent = SolidusAfterpay::UserAgentGenerator.new(merchant_id: options[:merchant_id]).generate
       end
     end
+
+    def authorize(_amount, _payment_source, _gateway_options)
+      ActiveMerchant::Billing::Response.new(true, 'Transaction approved')
+    end
   end
 end
