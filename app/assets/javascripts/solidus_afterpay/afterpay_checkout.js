@@ -49,10 +49,42 @@ $(function() {
 
   function onSuccess(response) {
     AfterPay.initialize({ countryCode: 'US' });
-    AfterPay.redirect({ token: response.token });
+    if(popupWindow){
+      openAfterpayPopup(response);
+    } else {
+      AfterPay.redirect({ token: response.token });
+    }
   }
 
   function onError(response) {
+    enableSubmit();
+  }
+ 
+  function openAfterpayPopup(response){
+    AfterPay.onComplete = function(event) {
+      if(event.data.status == 'SUCCESS') {
+        onAfterpaySuccess(event);
+      } else {
+        onAfterpayCancel(event);
+      }
+    }
+    AfterPay.open();
+    AfterPay.transfer({ token: response.token });
+  }
+
+  function onAfterpaySuccess(event) {
+    Spree.ajax({
+      method: 'GET',
+      url: '/solidus_afterpay/callbacks/confirm.json',
+      data: { order_number: orderNumber, payment_method_id: paymentMethodId, orderToken: event.data.orderToken }
+    }).success(function(response) {
+      window.location.href = response.redirect_url;
+    }).error(function(response) {
+      enableSubmit();
+    });
+  }
+
+  function onAfterpayCancel(event) {
     enableSubmit();
   }
 
@@ -62,6 +94,7 @@ $(function() {
 
     var paymentMethodId = $('#afterpay_checkout_payload').data('payment-method-id');
     var orderNumber = $('#afterpay_checkout_payload').data('order-number');
+    var popupWindow = $('#afterpay_checkout_payload').data('popup-window');
 
     addFormHook();
   }
