@@ -5,6 +5,7 @@ module SolidusAfterpay
     preference :merchant_id, :string
     preference :secret_key, :string
     preference :deferred, :boolean
+    preference :popup_window, :boolean
 
     def gateway_class
       SolidusAfterpay::Gateway
