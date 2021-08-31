@@ -18,8 +18,10 @@ module SolidusAfterpay
       if ::Spree::OrderUpdateAttributes.new(order, update_params, request_env: request.headers.env).apply
         order.next
       end
-
-      redirect_to checkout_state_path(order.state)
+      respond_to do |format|
+        format.html { redirect_to checkout_state_path(order.state) }
+        format.json { render json: { redirect_url: checkout_state_url(order.state) } }
+      end
     end
 
     def cancel
