@@ -21,7 +21,41 @@ bin/rails generate solidus_afterpay:install
 
 ## Usage
 
-<!-- Explain how to use your extension once it's been installed. -->
+### Afterpay Messaging
+
+Afterpay offers an on-site messaging component to notify the customer that there are financing options available.
+
+To add the `Afterpay messaging` simply add the `Afterpay messaging partial` into your `html.erb` file, like this.
+
+```erb
+<%= render "spree/shared/afterpay_messaging", min: nil, max: nil, data: { amount: <Product price>, locale: "en_US", currency: "USD" } %>
+```
+The amount, locale and currency are required in order to work properly.
+
+This will automatically render an Afterpay messaging icon.
+
+The max attribute is to configure till which amount Afterpay should be available.
+
+The min attribute is to configure from which amount Afterpay should be available.
+
+For example if you would write...
+
+```erb
+<%= render "spree/shared/afterpay_messaging", min: nil, max: 25, data: { amount: <Product price>, locale: "en_US", currency: "USD" } %>
+```
+And a product price is `28.99`, Afterpay will display on that product that Afterpay is only available for orders between 1$ and 25$.
+
+The default value for min is 1$.
+
+When adding nil to `max`, Afterpay will be available on all orders.
+
+Click [here](https://developers.afterpay.com/afterpay-online/docs/advanced-usage) for more information on how to configure/style Afterpay messaging.
+
+If you would like to change the size of the Afterpay messaging you simply add size to the `data` hash. For example...
+
+```erb
+<%= render "spree/shared/afterpay_messaging", min: nil, max: nil, data: { amount: <Product price>, locale: "en_US", currency: "USD", size: "sm" } %>
+```
 
 ## Development
 
