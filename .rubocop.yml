@@ -2,4 +2,13 @@ require:
   - solidus_dev_support/rubocop
 
 AllCops:
-  NewCops: disable
+  NewCops: enable
+
+RSpec/ImplicitSubject:
+  Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Max: 4

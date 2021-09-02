@@ -1,0 +1,120 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.us-sandbox.afterpay.com/v2/payments/capture
+    body:
+      encoding: UTF-8
+      string: '{"token":"002.kj16plsn63eqfacueg767cp7l34e9ph5tms4ql14o2iid7l1","merchantReference":null,"amount":null}'
+    headers:
+      User-Agent:
+      - SolidusAfterpay/0.0.1 (Solidus/3.0.1; Ruby/2.6.6; Merchant/100101481) https://
+      Authorization:
+      - Basic <ENCODED_AUTH_HEADER>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Date:
+      - Wed, 25 Aug 2021 14:57:17 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '1560'
+      Connection:
+      - keep-alive
+      Http-Correlation-Id:
+      - wbzt22o3ajpm2efimhqfmwst6m
+      X-Envoy-Upstream-Service-Time:
+      - '69'
+      Cf-Cache-Status:
+      - DYNAMIC
+      Expect-Ct:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      Set-Cookie:
+      - __cf_bm=0f42003dd5d0a97e8093a1ca3845148197627dc7-1629903437-1800-AQmyscm4AU8yJ+HMdlqMUYCVIajsIsAS6CbHuihiQsKF0l/Un9e6mweBaPcPTkp5Wrwn6vMcDTsNPlHHVpRkvrDWTwuuKXuaZHFVFnR6WAEk;
+        path=/; expires=Wed, 25-Aug-21 15:27:17 GMT; domain=.afterpay.com; HttpOnly;
+        Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 6845ac04aaf6fc85-FCO
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "id" : "100101770179",
+          "token" : "002.kj16plsn63eqfacueg767cp7l34e9ph5tms4ql14o2iid7l1",
+          "status" : "DECLINED",
+          "created" : "2021-08-25T09:46:39.126Z",
+          "originalAmount" : {
+            "amount" : "22.04",
+            "currency" : "USD"
+          },
+          "openToCaptureAmount" : {
+            "amount" : "22.04",
+            "currency" : "USD"
+          },
+          "paymentState" : "CAPTURE_DECLINED",
+          "merchantReference" : "R628448628",
+          "refunds" : [ ],
+          "orderDetails" : {
+            "consumer" : {
+              "phoneNumber" : "",
+              "givenNames" : "Christian",
+              "surname" : "Rimondi",
+              "email" : "admin@example.com"
+            },
+            "billing" : {
+              "name" : "Christian Rimondi",
+              "line1" : "1313 Broadway",
+              "line2" : "",
+              "area1" : "New York",
+              "region" : "NY",
+              "postcode" : "10001",
+              "phoneNumber" : "12524264421"
+            },
+            "shipping" : {
+              "name" : "Christian Rimondi",
+              "line1" : "1313 Broadway",
+              "line2" : "",
+              "area1" : "New York",
+              "region" : "NY",
+              "postcode" : "10001",
+              "phoneNumber" : "12524264421"
+            },
+            "courier" : { },
+            "items" : [ {
+              "name" : "Ruby Tote",
+              "sku" : "RUB-TOT01",
+              "quantity" : 1,
+              "price" : {
+                "amount" : "15.99",
+                "currency" : "USD"
+              }
+            } ],
+            "discounts" : [ ]
+          },
+          "events" : [ {
+            "id" : "1xDM3uHavfYqSFPWoQTNQgwrERa",
+            "created" : "2021-08-25T09:50:09.174Z",
+            "expires" : null,
+            "type" : "CAPTURE_DECLINED",
+            "amount" : {
+              "amount" : "22.04",
+              "currency" : "USD"
+            },
+            "paymentEventMerchantReference" : null
+          } ]
+        }
+  recorded_at: Wed, 25 Aug 2021 14:57:17 GMT
+recorded_with: VCR 6.0.0

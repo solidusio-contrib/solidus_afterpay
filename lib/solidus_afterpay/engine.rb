@@ -15,5 +15,10 @@ module SolidusAfterpay
     config.generators do |g|
       g.test_framework :rspec
     end
+
+    initializer "spree.payment_methods.register_afterpay_payment_method",
+      after: "spree.register.payment_methods" do |app|
+      app.config.spree.payment_methods << "SolidusAfterpay::PaymentMethod"
+    end
   end
 end

@@ -1,0 +1,5 @@
+<% if payment_method.present? %>
+  <% content_for :head do %>
+    <%= include_afterpay_js(test_mode: payment_method.preferred_test_mode) %>
+  <% end %>
+<% end %>
