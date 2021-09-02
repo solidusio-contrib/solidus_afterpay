@@ -1,0 +1,61 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.us-sandbox.afterpay.com/v2/payments/INVALID_RESPONSE_CODE/capture
+    body:
+      encoding: UTF-8
+      string: '{"token":null,"merchantReference":null,"amount":{"amount":"10.0","currency":"USD"}}'
+    headers:
+      User-Agent:
+      - SolidusAfterpay/0.0.1 (Solidus/3.0.1; Ruby/2.6.6; Merchant/100101481) https://
+      Authorization:
+      - Basic <ENCODED_AUTH_HEADER>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 404
+      message: Not Found
+    headers:
+      Date:
+      - Mon, 30 Aug 2021 08:48:27 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Http-Correlation-Id:
+      - 65heouufjkegv3vl5qb4i73xcy
+      X-Envoy-Upstream-Service-Time:
+      - '10'
+      Cf-Cache-Status:
+      - DYNAMIC
+      Expect-Ct:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      Set-Cookie:
+      - __cf_bm=668eff4e9ffc28fd31679cdc0261c9ce4b4acb4f-1630313307-1800-ARk1O0SHKLPLwUr13/S67+8NNwr+pjKEXPuAkFR3wUFehdAFbFXgmCP/WIdwgqMJhCTfgtb5JTUww/y2ybtjxRVHs3ghPKv8n8FlLptenDOJ;
+        path=/; expires=Mon, 30-Aug-21 09:18:27 GMT; domain=.afterpay.com; HttpOnly;
+        Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 686cc29bb9b9cd16-FCO
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "errorCode" : "not_found",
+          "errorId" : "b02ca4e229954972",
+          "message" : "Afterpay payment ID not found.",
+          "httpStatusCode" : 404
+        }
+  recorded_at: Mon, 30 Aug 2021 08:48:27 GMT
+recorded_with: VCR 6.0.0
