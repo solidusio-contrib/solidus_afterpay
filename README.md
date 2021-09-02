@@ -61,6 +61,13 @@ SolidusAfterpay::PaymentMethod.new(
   preference_source: "afterpay_credentials"
 ).save
 ```
+## Deferred Payment Flow
+
+This flow completes the payment approval and starts the consumer's payment plan, but does not initiate the settlement process. This flow allows settlement of merchant funds to be deferred until order fulfilment can be confirmed.
+
+Simply check the deferred checkbox when creating the Afterpay payment_method to activate the deferred payment flow instead of the immediate payment flow.
+
+For more info about the deferred payment flow click [here](https://developers.afterpay.com/afterpay-online/reference#deferred-payment-flow).
 
 ## Usage
 
