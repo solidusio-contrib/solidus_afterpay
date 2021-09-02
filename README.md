@@ -18,6 +18,49 @@ Bundle your dependencies and run the installation generator:
 ```shell
 bin/rails generate solidus_afterpay:install
 ```
+## Basic Setup
+
+### Retrieve Afterpay account details
+You'll need the following account details:
+- `Merchant ID`
+- `Secret key`
+
+These values can be obtained by calling the `Merchant Support` [here](https://developers.afterpay.com/afterpay-online/docs/merchant-support).
+
+### Create a new payment method
+Payment methods can accept preferences either directly entered in admin, or from a static source in code. For most projects we recommend using a static source, so that sensitive account credentials are not stored in the database.
+
+1. Set static preferences in an initializer
+  ```ruby
+  # config/initializers/spree.rb
+  Spree::Config.configure do |config|
+    config.static_model_preferences.add(
+      SolidusAfterpay::PaymentMethod,
+      'afterpay_credentials', {
+        merchant_id: ENV['AFTERPAY_MERCHANT_ID'],
+        secret_key: ENV['AFTERPAY_SECRET_KEY'],
+      }
+    )
+  end
+  ```
+
+2. Visit `/admin/payment_methods/new`
+
+3. Set `provider` to SolidusAfterpay::PaymentMethod
+
+4. Click "Save"
+
+5. Choose `afterpay_credentials` from the `Preference Source` select
+
+6. Click `Update` to save
+
+Alternatively, create a payment method from the Rails console with:
+```ruby
+SolidusAfterpay::PaymentMethod.new(
+  name: "Afterpay",
+  preference_source: "afterpay_credentials"
+).save
+```
 
 ## Usage
 
