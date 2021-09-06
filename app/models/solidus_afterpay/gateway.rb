@@ -119,6 +119,12 @@ module SolidusAfterpay
       nil
     end
 
+    def retrieve_configuration
+      ::Afterpay::API::Configuration::Retrieve.call.body
+    rescue ::Afterpay::BaseError
+      nil
+    end
+
     private
 
     def immediate_capture(_amount, _response_code, gateway_options)

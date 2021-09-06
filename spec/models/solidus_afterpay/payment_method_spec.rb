@@ -57,4 +57,87 @@ RSpec.describe SolidusAfterpay::PaymentMethod, type: :model do
       it { is_expected.to be(false) }
     end
   end
+
+  describe "#available_for_order?" do
+    subject { payment_method.available_for_order?(order) }
+
+    let(:preferred_minimum_amount) { nil }
+    let(:preferred_maximum_amount) { nil }
+    let(:preferred_currency) { nil }
+
+    let(:payment_method) do
+      described_class.new(
+        preferred_minimum_amount: preferred_minimum_amount,
+        preferred_maximum_amount: preferred_maximum_amount,
+        preferred_currency: preferred_currency
+      )
+    end
+
+    let(:order) { build(:order, currency: order_currency, total: order_total) }
+    let(:order_total) { 5 }
+    let(:order_currency) { 'USD' }
+
+    let(:configuration) do
+      require 'hashie'
+
+      Hashie::Mash.new({
+        minimumAmount: { amount: '1', currency: 'USD' },
+        maximumAmount: { amount: '10', currency: 'USD' }
+      })
+    end
+
+    before do
+      allow(payment_method.gateway).to receive(:retrieve_configuration).and_return(configuration)
+    end
+
+    context 'when preference settings are nil' do
+      context 'when order total is inside the range' do
+        it { is_expected.to be(true) }
+      end
+
+      context 'when order total is outside the range' do
+        let(:order_total) { 11 }
+
+        it { is_expected.to be(false) }
+      end
+
+      context 'when order currency is different from afterpay configuration' do
+        let(:order_currency) { 'EUR' }
+
+        it { is_expected.to be(false) }
+      end
+
+      context "when afterpay configuration doesn't include the minumumAmount" do
+        let(:configuration) do
+          require 'hashie'
+
+          Hashie::Mash.new({ maximumAmount: { amount: '10', currency: 'USD' } })
+        end
+
+        it { is_expected.to be(true) }
+      end
+    end
+
+    context 'when preference settings are not nil' do
+      let(:preferred_minimum_amount) { 1 }
+      let(:preferred_maximum_amount) { 10 }
+      let(:preferred_currency) { 'USD' }
+
+      context 'when order total is inside the range' do
+        it { is_expected.to be(true) }
+      end
+
+      context 'when order total is outside the range' do
+        let(:order_total) { 11 }
+
+        it { is_expected.to be(false) }
+      end
+
+      context 'when order currency is different from afterpay configuration' do
+        let(:order_currency) { 'EUR' }
+
+        it { is_expected.to be(false) }
+      end
+    end
+  end
 end

@@ -6,6 +6,9 @@ module SolidusAfterpay
     preference :secret_key, :string
     preference :deferred, :boolean
     preference :popup_window, :boolean
+    preference :minimum_amount, :decimal
+    preference :maximum_amount, :decimal
+    preference :currency, :string
 
     def gateway_class
       SolidusAfterpay::Gateway
@@ -27,6 +30,27 @@ module SolidusAfterpay
       return false unless response.success?
 
       response
+    end
+
+    def available_for_order?(order)
+      available_payment_currency == order.currency && available_payment_range.include?(order.total)
+    end
+
+    private
+
+    def available_payment_range
+      min = preferred_minimum_amount || configuration&.minimumAmount&.amount.to_f
+      max = preferred_maximum_amount || configuration&.maximumAmount&.amount.to_f
+
+      min..max
+    end
+
+    def available_payment_currency
+      preferred_currency || configuration&.maximumAmount&.currency
+    end
+
+    def configuration
+      @configuration ||= gateway.retrieve_configuration
     end
   end
 end
