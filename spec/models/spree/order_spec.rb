@@ -7,7 +7,7 @@ RSpec.describe Spree::Order, type: :model do
   let(:user) { create(:user, email: "solidus@example.com") }
   let(:order) { create(:order, user: user, store: store) }
 
-  context "#available_payment_methods" do
+  describe "#available_payment_methods" do
     it "includes frontend payment methods" do
       payment_method = Spree::PaymentMethod::Check.create!({
         name: "Fake",
@@ -28,6 +28,7 @@ RSpec.describe Spree::Order, type: :model do
       expect(order.available_payment_methods).to include(payment_method)
     end
 
+    # rubocop:disable RSpec/MultipleExpectations
     it "does not include a payment method twice" do
       payment_method = Spree::PaymentMethod::Check.create!({
         name: "Fake",
@@ -38,6 +39,7 @@ RSpec.describe Spree::Order, type: :model do
       expect(order.available_payment_methods.count).to eq(1)
       expect(order.available_payment_methods).to include(payment_method)
     end
+    # rubocop:enable RSpec/MultipleExpectations
 
     it "does not include inactive payment methods" do
       Spree::PaymentMethod::Check.create!({
@@ -66,7 +68,7 @@ RSpec.describe Spree::Order, type: :model do
       end
 
       it "respects the order of methods based on position" do
-        expect(subject).to eq([second_method, first_method])
+        is_expected.to eq([second_method, first_method])
       end
     end
 
@@ -90,11 +92,12 @@ RSpec.describe Spree::Order, type: :model do
           )
         end
 
-        context 'and the store has an extra payment method unavailable to users' do
+        # rubocop:disable RSpec/NestedGroups
+        context 'when the store has an extra payment method unavailable to users' do
           let!(:admin_only_payment_method) do
             create(:payment_method,
-                                                     available_to_users: false,
-                                                     available_to_admin: true)
+              available_to_users: false,
+              available_to_admin: true)
           end
 
           before do
@@ -107,6 +110,7 @@ RSpec.describe Spree::Order, type: :model do
             )
           end
         end
+        # rubocop:enable RSpec/NestedGroups
       end
 
       context 'when the store does not have payment methods' do
