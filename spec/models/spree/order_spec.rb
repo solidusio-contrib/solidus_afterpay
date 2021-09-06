@@ -70,6 +70,41 @@ RSpec.describe Spree::Order, type: :model do
       it "respects the order of methods based on position" do
         is_expected.to eq([second_method, first_method])
       end
+
+      context 'when a payment method responds to #available_for_order?' do
+        let(:third_method) {
+          FakePaymentMethod.create(name: 'Fake', available_to_users: true, available_to_admin: true)
+        }
+
+        before do
+          fake_payment_method_class = Class.new(SolidusSupport.payment_method_parent_class)
+          stub_const('FakePaymentMethod', fake_payment_method_class)
+
+          third_method
+        end
+
+        # rubocop:disable RSpec/NestedGroups
+        context 'when it responds with true' do
+          before do
+            FakePaymentMethod.class_eval { def available_for_order?(_order); true; end }
+          end
+
+          it 'includes it in the result' do
+            is_expected.to eq([second_method, first_method, third_method])
+          end
+        end
+
+        context 'when it responds with false' do
+          before do
+            FakePaymentMethod.class_eval { def available_for_order?(_order); false; end }
+          end
+
+          it "doesn't include it in the result" do
+            is_expected.to eq([second_method, first_method])
+          end
+        end
+        # rubocop:enable RSpec/NestedGroups
+      end
     end
 
     context 'when the order has a store' do
