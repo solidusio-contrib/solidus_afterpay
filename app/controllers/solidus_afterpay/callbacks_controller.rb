@@ -32,7 +32,7 @@ module SolidusAfterpay
           payment_method: payment_method,
           amount: order.total,
           source_attributes: {
-            token: order_token
+            token: afterpay_order_token
           }
         }]
       }
@@ -46,7 +46,7 @@ module SolidusAfterpay
       @payment_method ||= SolidusAfterpay::PaymentMethod.active.find(params[:payment_method_id])
     end
 
-    def order_token
+    def afterpay_order_token
       params[:orderToken] || params[:order_token]
     end
 
@@ -58,7 +58,7 @@ module SolidusAfterpay
     end
 
     def ensure_afterpay_order_token_presence
-      return if order_token
+      return if afterpay_order_token
 
       respond_to do |format|
         format.html {
