@@ -76,7 +76,7 @@ $(function() {
     Spree.ajax({
       method: 'GET',
       url: '/solidus_afterpay/callbacks/confirm.json',
-      data: { order_number: orderNumber, payment_method_id: paymentMethodId, orderToken: event.data.orderToken }
+      data: { order_number: orderNumber, payment_method_id: paymentMethodId, order_token: event.data.orderToken }
     }).success(function(response) {
       window.location.href = response.redirect_url;
     }).error(function(response) {
