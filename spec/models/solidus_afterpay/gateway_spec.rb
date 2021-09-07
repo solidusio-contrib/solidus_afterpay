@@ -343,4 +343,24 @@ RSpec.describe SolidusAfterpay::Gateway do
       end
     end
   end
+
+  describe '#retrieve_configuration' do
+    subject(:response) { gateway.retrieve_configuration }
+
+    context 'with valid response', vcr: 'retrieve_configuration/valid' do
+      it 'retrieves the afterpay configuration' do
+        expect(response).to include('minimumAmount', 'maximumAmount')
+      end
+    end
+
+    context 'with invalid response' do
+      before do
+        allow(::Afterpay::API::Configuration::Retrieve).to receive(:call).and_raise(::Afterpay::BaseError)
+      end
+
+      it 'retrieves the afterpay configuration' do
+        expect(response).to be_nil
+      end
+    end
+  end
 end
