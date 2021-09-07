@@ -5,8 +5,11 @@ module SolidusAfterpay
     protect_from_forgery except: [:create]
 
     rescue_from ::ActiveRecord::RecordNotFound, with: :resource_not_found
+    rescue_from ::CanCan::AccessDenied, with: :unauthorized
 
     def create
+      authorize! :update, order, order_token
+
       response = payment_method.gateway.create_checkout(
         order,
         redirect_confirm_url: redirect_confirm_url,
@@ -46,8 +49,16 @@ module SolidusAfterpay
       )
     end
 
+    def order_token
+      cookies.signed[:guest_token]
+    end
+
     def resource_not_found
       render json: { error: I18n.t('solidus_afterpay.resource_not_found') }, status: :not_found
+    end
+
+    def unauthorized
+      render json: { error: I18n.t('solidus_afterpay.unauthorized') }, status: :unauthorized
     end
   end
 end
