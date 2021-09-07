@@ -5,11 +5,14 @@ module SolidusAfterpay
     protect_from_forgery except: [:confirm, :cancel]
 
     rescue_from ::ActiveRecord::RecordNotFound, with: :resource_not_found
+    rescue_from ::CanCan::AccessDenied, with: :unauthorized
 
     before_action :ensure_afterpay_order_token_presence, only: :confirm
     before_action :ensure_order_not_completed, only: :confirm
 
     def confirm
+      authorize! :update, order, order_token
+
       if ::Spree::OrderUpdateAttributes.new(order, update_params, request_env: request.headers.env).apply
         order.next
       end
@@ -50,10 +53,21 @@ module SolidusAfterpay
       params[:orderToken] || params[:order_token]
     end
 
+    def order_token
+      cookies.signed[:guest_token]
+    end
+
     def resource_not_found
       respond_to do |format|
         format.html { redirect_to spree.cart_path, notice: I18n.t('solidus_afterpay.resource_not_found') }
         format.json { render json: { error: I18n.t('solidus_afterpay.resource_not_found') }, status: :not_found }
+      end
+    end
+
+    def unauthorized
+      respond_to do |format|
+        format.html { redirect_to spree.cart_path, notice: I18n.t('solidus_afterpay.unauthorized') }
+        format.json { render json: { error: I18n.t('solidus_afterpay.unauthorized') }, status: :unauthorized }
       end
     end
 
