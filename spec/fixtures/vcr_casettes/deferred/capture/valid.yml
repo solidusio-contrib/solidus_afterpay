@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: post
-    uri: https://api.us-sandbox.afterpay.com/v2/payments/100101782114/capture
+    uri: https://global-api-sandbox.afterpay.com/v2/payments/100101782114/capture
     body:
       encoding: UTF-8
       string: '{"token":null,"merchantReference":null,"amount":{"amount":"10.0","currency":"USD"}}'
