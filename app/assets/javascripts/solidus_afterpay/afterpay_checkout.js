@@ -59,7 +59,7 @@ $(function() {
   function onError(response) {
     enableSubmit();
   }
- 
+
   function openAfterpayPopup(response){
     AfterPay.onComplete = function(event) {
       if(event.data.status == 'SUCCESS') {
@@ -74,7 +74,7 @@ $(function() {
 
   function onAfterpaySuccess(event) {
     Spree.ajax({
-      method: 'GET',
+      method: 'POST',
       url: '/solidus_afterpay/callbacks/confirm.json',
       data: { order_number: orderNumber, payment_method_id: paymentMethodId, order_token: event.data.orderToken }
     }).success(function(response) {
