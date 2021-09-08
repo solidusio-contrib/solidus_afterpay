@@ -77,17 +77,21 @@ module SolidusAfterpay
     end
 
     def items
-      order.line_items.includes(variant: :product).map do |item|
-        ::Afterpay::Components::Item.new(
-          name: item.name,
-          sku: item.sku,
-          quantity: item.quantity,
-          price: ::Afterpay::Components::Money.new(
-            amount: item.price.to_s,
-            currency: item.currency
-          )
-        )
+      order.line_items.includes(variant: :product).map do |line_item|
+        item(line_item)
       end
+    end
+
+    def item(line_item)
+      ::Afterpay::Components::Item.new(
+        name: line_item.name,
+        sku: line_item.sku,
+        quantity: line_item.quantity,
+        price: ::Afterpay::Components::Money.new(
+          amount: line_item.price.to_s,
+          currency: line_item.currency
+        )
+      )
     end
   end
 end
