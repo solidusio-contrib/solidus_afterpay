@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: post
-    uri: https://api.us-sandbox.afterpay.com/v2/payments/INVALID_RESPONSE_CODE/refund
+    uri: https://global-api-sandbox.afterpay.com/v2/payments/INVALID_RESPONSE_CODE/refund
     body:
       encoding: UTF-8
       string: '{"requestId":null,"merchantReference":null,"refundMerchantReference":null,"amount":{"amount":"10.0","currency":"USD"}}'

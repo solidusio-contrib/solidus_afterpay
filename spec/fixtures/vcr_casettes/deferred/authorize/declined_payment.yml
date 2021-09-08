@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: post
-    uri: https://api.us-sandbox.afterpay.com/v2/payments/auth
+    uri: https://global-api-sandbox.afterpay.com/v2/payments/auth
     body:
       encoding: UTF-8
       string: '{"token":"002.ijlqnvko1o4ou45uabplrl9pqao8u2v52njs2972r24hje65","merchantReference":null,"amount":null}'
