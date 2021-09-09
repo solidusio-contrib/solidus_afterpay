@@ -83,7 +83,6 @@ RSpec.describe Spree::Order, type: :model do
           third_method
         end
 
-        # rubocop:disable RSpec/NestedGroups
         context 'when it responds with true' do
           before do
             FakePaymentMethod.class_eval { def available_for_order?(_order); true; end }
@@ -103,7 +102,6 @@ RSpec.describe Spree::Order, type: :model do
             is_expected.to eq([second_method, first_method])
           end
         end
-        # rubocop:enable RSpec/NestedGroups
       end
     end
 
@@ -127,7 +125,6 @@ RSpec.describe Spree::Order, type: :model do
           )
         end
 
-        # rubocop:disable RSpec/NestedGroups
         context 'when the store has an extra payment method unavailable to users' do
           let!(:admin_only_payment_method) do
             create(:payment_method,
@@ -145,7 +142,6 @@ RSpec.describe Spree::Order, type: :model do
             )
           end
         end
-        # rubocop:enable RSpec/NestedGroups
       end
 
       context 'when the store does not have payment methods' do
