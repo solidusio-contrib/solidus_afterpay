@@ -35,20 +35,52 @@ describe SolidusAfterpay::CheckoutsController, type: :request do
         request
       end
 
-      it 'calls the create_checkout with the correct arguments' do
-        expect(gateway).to have_received(:create_checkout).with(
-          order,
-          redirect_confirm_url: "http://www.example.com/solidus_afterpay/callbacks/confirm?order_number=#{order.number}&payment_method_id=#{payment_method.id}",
-          redirect_cancel_url: "http://www.example.com/solidus_afterpay/callbacks/cancel?order_number=#{order.number}&payment_method_id=#{payment_method.id}"
-        )
-      end
-
-      it 'returns a 200 status code' do
-        expect(response).to have_http_status(:ok)
+      it 'returns a 201 status code' do
+        expect(response).to have_http_status(:created)
       end
 
       it 'returns the order_token' do
         expect(JSON.parse(response.body)['token']).to eq(order_token)
+      end
+
+      it 'returns the corrent params' do
+        expect(JSON.parse(response.body)).to include('token', 'expires', 'redirectCheckoutUrl')
+      end
+
+      context 'when no redirect URLs are passed as params' do
+        let(:redirect_confirm_url) do
+          "http://www.example.com/solidus_afterpay/callbacks/confirm?order_number=#{order.number}&payment_method_id=#{payment_method.id}"
+        end
+
+        let(:redirect_cancel_url) do
+          "http://www.example.com/solidus_afterpay/callbacks/cancel?order_number=#{order.number}&payment_method_id=#{payment_method.id}"
+        end
+
+        it 'calls the create_checkout with the correct arguments' do
+          expect(gateway).to have_received(:create_checkout).with(
+            order,
+            redirect_confirm_url: redirect_confirm_url,
+            redirect_cancel_url: redirect_cancel_url
+          )
+        end
+      end
+
+      context 'when redirect URLs are passed as params' do
+        let(:redirect_confirm_url) { 'http://www.example.com/confirm_url' }
+        let(:redirect_cancel_url) { 'http://www.example.com/cancel_url' }
+
+        let(:params) do
+          { order_number: order_number, payment_method_id: payment_method_id,
+            redirect_confirm_url: redirect_confirm_url, redirect_cancel_url: redirect_cancel_url }
+        end
+
+        it 'calls the create_checkout with the correct arguments' do
+          expect(gateway).to have_received(:create_checkout).with(
+            order,
+            redirect_confirm_url: redirect_confirm_url,
+            redirect_cancel_url: redirect_cancel_url
+          )
+        end
       end
     end
 
@@ -86,8 +118,8 @@ describe SolidusAfterpay::CheckoutsController, type: :request do
 
       before { request }
 
-      it 'returns a 500 status code' do
-        expect(response).to have_http_status(:internal_server_error)
+      it 'returns a 422 status code' do
+        expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it 'returns a resource not found error message' do
