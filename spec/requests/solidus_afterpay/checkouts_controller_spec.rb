@@ -50,6 +50,10 @@ describe SolidusAfterpay::CheckoutsController, type: :request do
       it 'returns the order_token' do
         expect(JSON.parse(response.body)['token']).to eq(order_token)
       end
+
+      it 'returns the corrent params' do
+        expect(JSON.parse(response.body)).to include('token', 'expires', 'redirectCheckoutUrl')
+      end
     end
 
     context 'when the order_number is invalid' do

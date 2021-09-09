@@ -16,8 +16,13 @@ module SolidusAfterpay
           order_number: order.number, payment_method_id: payment_method.id
         )
       )
+
       if response.success?
-        render json: { token: response.params['token'] }
+        render json: {
+          token: response.params['token'],
+          expires: response.params['expires'],
+          redirectCheckoutUrl: response.params['redirectCheckoutUrl']
+        }
       else
         render json: { error: response.message }, status: :internal_server_error
       end
