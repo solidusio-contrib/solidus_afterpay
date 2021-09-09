@@ -46,6 +46,10 @@ RSpec.describe SolidusAfterpay::Gateway do
         it 'returns the error message from Afterpay in the response' do
           expect(response.message).to eq('Cannot complete payment, expired or invalid token.')
         end
+
+        it 'returns the error_code from Afterpay in the response' do
+          expect(response.error_code).to eq('invalid_token')
+        end
       end
 
       context 'with an invalid credit card', vcr: 'deferred/authorize/declined_payment' do
@@ -59,6 +63,10 @@ RSpec.describe SolidusAfterpay::Gateway do
           expect(response.message).to eq(
             'Payment declined. Please contact the Afterpay Customer Service team for more information.'
           )
+        end
+
+        it 'returns the error_code from Afterpay in the response' do
+          expect(response.error_code).to eq('payment_declined')
         end
       end
     end
@@ -94,6 +102,10 @@ RSpec.describe SolidusAfterpay::Gateway do
         it 'returns the error message from Afterpay in the response' do
           expect(response.message).to eq('Cannot complete payment, expired or invalid token.')
         end
+
+        it 'returns the error_code from Afterpay in the response' do
+          expect(response.error_code).to eq('invalid_token')
+        end
       end
 
       context 'with an invalid credit card', vcr: 'immediate/capture/declined_payment' do
@@ -107,6 +119,10 @@ RSpec.describe SolidusAfterpay::Gateway do
           expect(response.message).to eq(
             'Payment declined. Please contact the Afterpay Customer Service team for more information.'
           )
+        end
+
+        it 'returns the error_code from Afterpay in the response' do
+          expect(response.error_code).to eq('payment_declined')
         end
       end
     end
@@ -129,6 +145,10 @@ RSpec.describe SolidusAfterpay::Gateway do
 
         it 'returns the error message from Afterpay in the response' do
           expect(response.message).to eq('Afterpay payment ID not found.')
+        end
+
+        it 'returns the error_code from Afterpay in the response' do
+          expect(response.error_code).to eq('not_found')
         end
       end
     end
@@ -163,6 +183,10 @@ RSpec.describe SolidusAfterpay::Gateway do
         it 'returns the error message from Afterpay in the response' do
           expect(response.message).to eq('Cannot complete payment, expired or invalid token.')
         end
+
+        it 'returns the error_code from Afterpay in the response' do
+          expect(response.error_code).to eq('invalid_token')
+        end
       end
 
       context 'with an invalid credit card', vcr: 'immediate/capture/declined_payment' do
@@ -176,6 +200,10 @@ RSpec.describe SolidusAfterpay::Gateway do
           expect(response.message).to eq(
             'Payment declined. Please contact the Afterpay Customer Service team for more information.'
           )
+        end
+
+        it 'returns the error_code from Afterpay in the response' do
+          expect(response.error_code).to eq('payment_declined')
         end
       end
     end
@@ -201,6 +229,10 @@ RSpec.describe SolidusAfterpay::Gateway do
         it 'returns the error message from Afterpay in the response' do
           expect(response.message).to eq('Cannot complete payment, expired or invalid token.')
         end
+
+        it 'returns the error_code from Afterpay in the response' do
+          expect(response.error_code).to eq('invalid_token')
+        end
       end
 
       context 'with an invalid credit card', vcr: 'deferred/authorize/declined_payment' do
@@ -214,6 +246,10 @@ RSpec.describe SolidusAfterpay::Gateway do
           expect(response.message).to eq(
             'Payment declined. Please contact the Afterpay Customer Service team for more information.'
           )
+        end
+
+        it 'returns the error_code from Afterpay in the response' do
+          expect(response.error_code).to eq('payment_declined')
         end
       end
     end
@@ -245,6 +281,10 @@ RSpec.describe SolidusAfterpay::Gateway do
       it 'returns the error message from Afterpay in the response' do
         expect(response.message).to eq('Afterpay payment ID not found.')
       end
+
+      it 'returns the error_code from Afterpay in the response' do
+        expect(response.error_code).to eq('not_found')
+      end
     end
   end
 
@@ -267,6 +307,10 @@ RSpec.describe SolidusAfterpay::Gateway do
       it 'returns the error message from Afterpay in the response' do
         expect(response.message).to eq("Transaction can't be voided")
       end
+
+      it 'returns the error_code from Afterpay in the response' do
+        expect(response.error_code).to eq('void_not_allowed')
+      end
     end
 
     context 'with the deferred flow' do
@@ -287,6 +331,10 @@ RSpec.describe SolidusAfterpay::Gateway do
 
         it 'returns the error message from Afterpay in the response' do
           expect(response.message).to eq('Afterpay payment ID not found.')
+        end
+
+        it 'returns the error_code from Afterpay in the response' do
+          expect(response.error_code).to eq('not_found')
         end
       end
     end
@@ -320,6 +368,10 @@ RSpec.describe SolidusAfterpay::Gateway do
 
       it 'returns the error message from Afterpay in the response' do
         expect(response.message).to eq('merchant.redirectConfirmUrl must be a valid URL')
+      end
+
+      it 'returns the error_code from Afterpay in the response' do
+        expect(response.error_code).to eq('invalid_object')
       end
     end
   end
@@ -355,7 +407,7 @@ RSpec.describe SolidusAfterpay::Gateway do
 
     context 'with invalid response' do
       before do
-        allow(::Afterpay::API::Configuration::Retrieve).to receive(:call).and_raise(::Afterpay::BaseError)
+        allow(::Afterpay::API::Configuration::Retrieve).to receive(:call).and_raise(::Afterpay::BaseError.new(nil))
       end
 
       it 'retrieves the afterpay configuration' do

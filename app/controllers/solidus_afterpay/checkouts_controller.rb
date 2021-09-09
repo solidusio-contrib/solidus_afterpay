@@ -18,7 +18,7 @@ module SolidusAfterpay
           redirectCheckoutUrl: response.params['redirectCheckoutUrl']
         }, status: :created
       else
-        render json: { error: response.message }, status: :unprocessable_entity
+        render json: { error: response.message, errorCode: response.error_code }, status: :unprocessable_entity
       end
     end
 
