@@ -1,13 +1,9 @@
 # frozen_string_literal: true
 
 module SolidusAfterpay
-  # rubocop:disable Lint/EmptyClass
   class Configuration
-    # Define here the settings for this extension, e.g.:
-    #
-    # attr_accessor :my_setting
+    attr_accessor :use_solidus_api
   end
-  # rubocop:enable Lint/EmptyClass
 
   class << self
     def configuration
@@ -18,6 +14,12 @@ module SolidusAfterpay
 
     def configure
       yield configuration
+    end
+
+    def api_base_controller_parent_class
+      return ::Spree::Api::BaseController if configuration.use_solidus_api
+
+      SolidusAfterpay::BaseController
     end
   end
 end

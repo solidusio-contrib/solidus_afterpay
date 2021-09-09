@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module SolidusAfterpay
-  class CheckoutsController < SolidusAfterpay::BaseController
+  class CheckoutsController < SolidusAfterpay.api_base_controller_parent_class
     def create
       authorize! :update, order, order_token
 

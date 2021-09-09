@@ -1,0 +1,2 @@
+ignore:
+  - "lib/generators/solidus_afterpay/install/templates"
