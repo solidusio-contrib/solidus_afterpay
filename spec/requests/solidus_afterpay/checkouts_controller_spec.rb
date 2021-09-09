@@ -43,8 +43,8 @@ describe SolidusAfterpay::CheckoutsController, type: :request do
         )
       end
 
-      it 'returns a 200 status code' do
-        expect(response).to have_http_status(:ok)
+      it 'returns a 201 status code' do
+        expect(response).to have_http_status(:created)
       end
 
       it 'returns the order_token' do
@@ -90,8 +90,8 @@ describe SolidusAfterpay::CheckoutsController, type: :request do
 
       before { request }
 
-      it 'returns a 500 status code' do
-        expect(response).to have_http_status(:internal_server_error)
+      it 'returns a 422 status code' do
+        expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it 'returns a resource not found error message' do

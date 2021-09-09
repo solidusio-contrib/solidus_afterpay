@@ -22,9 +22,9 @@ module SolidusAfterpay
           token: response.params['token'],
           expires: response.params['expires'],
           redirectCheckoutUrl: response.params['redirectCheckoutUrl']
-        }
+        }, status: :created
       else
-        render json: { error: response.message }, status: :internal_server_error
+        render json: { error: response.message }, status: :unprocessable_entity
       end
     end
 
