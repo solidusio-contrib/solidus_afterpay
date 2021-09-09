@@ -19,6 +19,7 @@ module SolidusAfterpay
     initializer "spree.payment_methods.register_afterpay_payment_method",
       after: "spree.register.payment_methods" do |app|
       app.config.spree.payment_methods << "SolidusAfterpay::PaymentMethod"
+      Spree::PermittedAttributes.source_attributes.concat [:token]
     end
   end
 end
