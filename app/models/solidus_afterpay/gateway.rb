@@ -28,8 +28,12 @@ module SolidusAfterpay
       ActiveMerchant::Billing::Response.new(true, 'Transaction approved', result, authorization: result[:id])
     rescue ::Afterpay::BaseError => e
       message = e.message
-      message = I18n.t('solidus_afterpay.payment_declined') if message == 'Afterpay::PaymentRequiredError'
-      ActiveMerchant::Billing::Response.new(false, message)
+      error_code = e.error_code
+      if message == 'Afterpay::PaymentRequiredError'
+        message = I18n.t('solidus_afterpay.payment_declined')
+        error_code = 'payment_declined'
+      end
+      ActiveMerchant::Billing::Response.new(false, message, {}, error_code: error_code)
     end
 
     def capture(amount, response_code, gateway_options)
@@ -42,11 +46,13 @@ module SolidusAfterpay
                  end
       result = response.body
 
-      raise ::Afterpay::BaseError, I18n.t('solidus_afterpay.payment_declined') if result.status != 'APPROVED'
+      if result.status != 'APPROVED'
+        raise ::Afterpay::BaseError.new('payment_declined'), I18n.t('solidus_afterpay.payment_declined')
+      end
 
       ActiveMerchant::Billing::Response.new(true, 'Transaction captured', result, authorization: result.id)
     rescue ::Afterpay::BaseError => e
-      ActiveMerchant::Billing::Response.new(false, e.message)
+      ActiveMerchant::Billing::Response.new(false, e.message, {}, error_code: e.error_code)
     end
 
     def purchase(amount, payment_source, gateway_options)
@@ -72,14 +78,15 @@ module SolidusAfterpay
       ActiveMerchant::Billing::Response.new(true, "Transaction Credited with #{amount}", result,
         authorization: result.refundId)
     rescue ::Afterpay::BaseError => e
-      ActiveMerchant::Billing::Response.new(false, e.message)
+      ActiveMerchant::Billing::Response.new(false, e.message, {}, error_code: e.error_code)
     end
 
     def void(response_code, gateway_options)
       payment_method = gateway_options[:originator].payment_method
 
       unless payment_method.preferred_deferred
-        return ActiveMerchant::Billing::Response.new(false, "Transaction can't be voided")
+        return ActiveMerchant::Billing::Response.new(false, "Transaction can't be voided", {},
+          error_code: 'void_not_allowed')
       end
 
       response = ::Afterpay::API::Payment::Void.call(
@@ -95,7 +102,7 @@ module SolidusAfterpay
 
       ActiveMerchant::Billing::Response.new(true, 'Transaction voided', result, authorization: result.id)
     rescue ::Afterpay::BaseError => e
-      ActiveMerchant::Billing::Response.new(false, e.message)
+      ActiveMerchant::Billing::Response.new(false, e.message, {}, error_code: e.error_code)
     end
 
     def create_checkout(order, gateway_options)
@@ -110,7 +117,7 @@ module SolidusAfterpay
 
       ActiveMerchant::Billing::Response.new(true, 'Checkout created', result)
     rescue ::Afterpay::BaseError => e
-      ActiveMerchant::Billing::Response.new(false, e.message)
+      ActiveMerchant::Billing::Response.new(false, e.message, {}, error_code: e.error_code)
     end
 
     def find_payment(order_id:)
