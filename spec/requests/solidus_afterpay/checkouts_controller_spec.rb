@@ -18,6 +18,7 @@ describe SolidusAfterpay::CheckoutsController, type: :request do
     let(:order_token) { 'ORDER_TOKEN' }
     let(:gateway_response_success?) { true }
     let(:gateway_response_message) { 'Success message' }
+    let(:gateway_response_error_code) { nil }
     let(:gateway_response_params) { { 'token' => order_token } }
     let(:headers) { {} }
 
@@ -25,7 +26,8 @@ describe SolidusAfterpay::CheckoutsController, type: :request do
       ActiveMerchant::Billing::Response.new(
         gateway_response_success?,
         gateway_response_message,
-        gateway_response_params
+        gateway_response_params,
+        { error_code: gateway_response_error_code }
       )
     end
 
@@ -123,6 +125,7 @@ describe SolidusAfterpay::CheckoutsController, type: :request do
         context 'when the gateway responds with error' do
           let(:gateway_response_success?) { false }
           let(:gateway_response_message) { 'Error message' }
+          let(:gateway_response_error_code) { 'errorCode' }
 
           before { request }
 
@@ -132,6 +135,10 @@ describe SolidusAfterpay::CheckoutsController, type: :request do
 
           it 'returns a resource not found error message' do
             expect(JSON.parse(response.body)['error']).to eq(gateway_response_message)
+          end
+
+          it 'returns the error_code' do
+            expect(JSON.parse(response.body)['errorCode']).to eq(gateway_response_error_code)
           end
         end
       end
