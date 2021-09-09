@@ -9,12 +9,8 @@ module SolidusAfterpay
     def create
       response = payment_method.gateway.create_checkout(
         order,
-        redirect_confirm_url: solidus_afterpay.callbacks_confirm_url(
-          order_number: order.number, payment_method_id: payment_method.id
-        ),
-        redirect_cancel_url: solidus_afterpay.callbacks_cancel_url(
-          order_number: order.number, payment_method_id: payment_method.id
-        )
+        redirect_confirm_url: redirect_confirm_url,
+        redirect_cancel_url: redirect_cancel_url
       )
 
       if response.success?
@@ -36,6 +32,18 @@ module SolidusAfterpay
 
     def payment_method
       @payment_method ||= SolidusAfterpay::PaymentMethod.active.find(params[:payment_method_id])
+    end
+
+    def redirect_confirm_url
+      params[:redirect_confirm_url] || solidus_afterpay.callbacks_confirm_url(
+        order_number: order.number, payment_method_id: payment_method.id
+      )
+    end
+
+    def redirect_cancel_url
+      params[:redirect_cancel_url] || solidus_afterpay.callbacks_cancel_url(
+        order_number: order.number, payment_method_id: payment_method.id
+      )
     end
 
     def resource_not_found

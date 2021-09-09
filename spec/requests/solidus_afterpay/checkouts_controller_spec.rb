@@ -35,14 +35,6 @@ describe SolidusAfterpay::CheckoutsController, type: :request do
         request
       end
 
-      it 'calls the create_checkout with the correct arguments' do
-        expect(gateway).to have_received(:create_checkout).with(
-          order,
-          redirect_confirm_url: "http://www.example.com/solidus_afterpay/callbacks/confirm?order_number=#{order.number}&payment_method_id=#{payment_method.id}",
-          redirect_cancel_url: "http://www.example.com/solidus_afterpay/callbacks/cancel?order_number=#{order.number}&payment_method_id=#{payment_method.id}"
-        )
-      end
-
       it 'returns a 201 status code' do
         expect(response).to have_http_status(:created)
       end
@@ -53,6 +45,42 @@ describe SolidusAfterpay::CheckoutsController, type: :request do
 
       it 'returns the corrent params' do
         expect(JSON.parse(response.body)).to include('token', 'expires', 'redirectCheckoutUrl')
+      end
+
+      context 'when no redirect URLs are passed as params' do
+        let(:redirect_confirm_url) do
+          "http://www.example.com/solidus_afterpay/callbacks/confirm?order_number=#{order.number}&payment_method_id=#{payment_method.id}"
+        end
+
+        let(:redirect_cancel_url) do
+          "http://www.example.com/solidus_afterpay/callbacks/cancel?order_number=#{order.number}&payment_method_id=#{payment_method.id}"
+        end
+
+        it 'calls the create_checkout with the correct arguments' do
+          expect(gateway).to have_received(:create_checkout).with(
+            order,
+            redirect_confirm_url: redirect_confirm_url,
+            redirect_cancel_url: redirect_cancel_url
+          )
+        end
+      end
+
+      context 'when redirect URLs are passed as params' do
+        let(:redirect_confirm_url) { 'http://www.example.com/confirm_url' }
+        let(:redirect_cancel_url) { 'http://www.example.com/cancel_url' }
+
+        let(:params) do
+          { order_number: order_number, payment_method_id: payment_method_id,
+            redirect_confirm_url: redirect_confirm_url, redirect_cancel_url: redirect_cancel_url }
+        end
+
+        it 'calls the create_checkout with the correct arguments' do
+          expect(gateway).to have_received(:create_checkout).with(
+            order,
+            redirect_confirm_url: redirect_confirm_url,
+            redirect_cancel_url: redirect_cancel_url
+          )
+        end
       end
     end
 
