@@ -111,7 +111,7 @@ http_interactions:
           },
           "discounts" : [ ],
           "merchantReference" : "R063381025",
-          "shippingOptionIdentifier" : "1",
+          "shippingOptionIdentifier" : "999",
           "shippingOptions" : {
             "supportedShippingCountries" : [ ]
           }
