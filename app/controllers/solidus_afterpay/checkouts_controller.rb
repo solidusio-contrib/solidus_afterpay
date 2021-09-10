@@ -8,7 +8,9 @@ module SolidusAfterpay
       response = payment_method.gateway.create_checkout(
         order,
         redirect_confirm_url: redirect_confirm_url,
-        redirect_cancel_url: redirect_cancel_url
+        redirect_cancel_url: redirect_cancel_url,
+        mode: params[:mode],
+        popup_origin_url: request.referer
       )
 
       if response.success?
@@ -29,7 +31,11 @@ module SolidusAfterpay
     end
 
     def payment_method
-      @payment_method ||= SolidusAfterpay::PaymentMethod.active.find(params[:payment_method_id])
+      @payment_method ||= if params[:payment_method_id]
+                            SolidusAfterpay::PaymentMethod.active.find(params[:payment_method_id])
+                          else
+                            SolidusAfterpay::PaymentMethod.active.first
+                          end
     end
 
     def redirect_confirm_url

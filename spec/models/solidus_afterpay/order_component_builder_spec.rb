@@ -9,7 +9,9 @@ RSpec.describe SolidusAfterpay::OrderComponentBuilder do
     described_class.new(
       order: order,
       redirect_confirm_url: redirect_confirm_url,
-      redirect_cancel_url: redirect_cancel_url
+      redirect_cancel_url: redirect_cancel_url,
+      mode: nil,
+      popup_origin_url: nil
     )
   end
 
@@ -126,12 +128,38 @@ RSpec.describe SolidusAfterpay::OrderComponentBuilder do
       )
     end
 
-    let(:expected_result) do
-      SolidusSupport.combined_first_and_last_name_in_address? ? expected_result_combined : expected_result_not_combined
+    context 'when solidus combines first and last name' do
+      before do
+        allow(SolidusSupport)
+          .to receive(:combined_first_and_last_name_in_address?)
+          .and_return(true)
+      end
+
+      it 'returns the correct payload' do
+        expect(result.as_json).to eq(expected_result_combined.as_json)
+      end
     end
 
-    it 'returns the correct payload' do
-      expect(result.as_json).to eq(expected_result.as_json)
+    context 'when solidus does not combine first and last name' do
+      before do
+        allow(SolidusSupport)
+          .to receive(:combined_first_and_last_name_in_address?)
+          .and_return(false)
+
+        # rubocop:disable RSpec/AnyInstance
+        allow_any_instance_of(Spree::Address)
+          .to receive(:first_name)
+          .and_return('John')
+
+        allow_any_instance_of(Spree::Address)
+          .to receive(:last_name)
+          .and_return(nil)
+        # rubocop:enable RSpec/AnyInstance
+      end
+
+      it 'returns the correct payload' do
+        expect(result.as_json).to eq(expected_result_not_combined.as_json)
+      end
     end
   end
 end

@@ -109,8 +109,10 @@ module SolidusAfterpay
       response = ::Afterpay::API::Order::Create.call(
         order: SolidusAfterpay::OrderComponentBuilder.new(
           order: order,
+          mode: gateway_options[:mode],
           redirect_confirm_url: gateway_options[:redirect_confirm_url],
-          redirect_cancel_url: gateway_options[:redirect_cancel_url]
+          redirect_cancel_url: gateway_options[:redirect_cancel_url],
+          popup_origin_url: gateway_options[:popup_origin_url]
         ).call
       )
       result = response.body
