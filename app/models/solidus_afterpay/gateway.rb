@@ -15,12 +15,18 @@ module SolidusAfterpay
       end
     end
 
-    def authorize(_amount, payment_source, _gateway_options)
+    def authorize(amount, payment_source, gateway_options)
       result = {}
 
       if payment_source.payment_method.preferred_deferred
         response = ::Afterpay::API::Payment::Auth.call(
-          payment: ::Afterpay::Components::Payment.new(token: payment_source.token)
+          payment: ::Afterpay::Components::Payment.new(
+            token: payment_source.token,
+            amount: ::Afterpay::Components::Money.new(
+              amount: Money.from_cents(amount).amount.to_s,
+              currency: gateway_options[:currency]
+            )
+          )
         )
         result = response.body
       end
@@ -142,11 +148,17 @@ module SolidusAfterpay
 
     private
 
-    def immediate_capture(_amount, _response_code, gateway_options)
+    def immediate_capture(amount, _response_code, gateway_options)
       payment_source = gateway_options[:originator].payment_source
 
       ::Afterpay::API::Payment::Capture.call(
-        payment: ::Afterpay::Components::Payment.new(token: payment_source.token)
+        payment: ::Afterpay::Components::Payment.new(
+          token: payment_source.token,
+          amount: ::Afterpay::Components::Money.new(
+            amount: Money.from_cents(amount).amount.to_s,
+            currency: gateway_options[:currency]
+          )
+        )
       )
     end
 
