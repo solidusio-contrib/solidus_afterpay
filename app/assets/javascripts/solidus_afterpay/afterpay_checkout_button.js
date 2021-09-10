@@ -16,6 +16,26 @@ $(document).bind("afterpay.loaded", function () {
           });
       },
       onShippingAddressChange: function (data, actions) {
+        Spree.ajax({
+          method: "PATCH",
+          url: `/solidus_afterpay/express_callbacks/${orderNumber}.json`,
+          data: { address: data },
+        })
+          .success(function (response) {
+            let results = response.data.map((shipping) =>
+              shippingMethod(shipping)
+            );
+
+            if (results.length > 0) {
+              actions.resolve(results);
+            } else {
+              actions.reject(AfterPay.CONSTANTS.SHIPPING_ADDRESS_UNSUPPORTED);
+            }
+          })
+          .error(function (error) {
+            actions.reject(AfterPay.CONSTANTS.BAD_RESPONSE);
+            console.error(error);
+          });
       },
       onComplete: function (data) {
       },
