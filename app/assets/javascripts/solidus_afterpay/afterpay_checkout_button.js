@@ -38,6 +38,23 @@ $(document).bind("afterpay.loaded", function () {
           });
       },
       onComplete: function (data) {
+        if (data.data.status == "SUCCESS") {
+          Spree.ajax({
+            method: "POST",
+            url: `/solidus_afterpay/express_callbacks/${orderNumber}.json`,
+            data: {
+              token: data.data.orderToken,
+              payment_method_id: paymentMethodId,
+            },
+          })
+            .success(function (response) {
+              window.location.href = response.redirect_url;
+            })
+            .error(function (error) {
+              const errorBody = JSON.parse(error.responseText);
+              showError(errorBody.error);
+            });
+        }
       },
       target: selector,
       buyNow: false,
@@ -48,7 +65,21 @@ $(document).bind("afterpay.loaded", function () {
 
   if ($("#afterpay-button").length > 0) {
     var orderNumber = $("#afterpay-button").data("order-number");
+    var paymentMethodId = $("#afterpay-button").data("payment-method-id");
 
     initializeExpressCheckout("#afterpay-button");
   }
 });
+
+function shippingMethod(shipping) {
+  return {
+    id: shipping.id,
+    name: shipping.name,
+    description: shipping.description,
+    shippingAmount: {
+      amount: shipping.shipping_amount,
+      currency: shipping.currency,
+    },
+    orderAmount: { amount: shipping.order_amount, currency: shipping.currency },
+  };
+}

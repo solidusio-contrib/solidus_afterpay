@@ -11,4 +11,6 @@ en:
     order_token_not_found: Invalid order confirmation data passed in.
     unauthorized: You are not authorized to perform that action.
     express_checkout:
+      errors:
+        unable_place_order: 'Unable to place the order!'
       button: Checkout with Afterpay
