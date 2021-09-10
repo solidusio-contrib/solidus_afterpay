@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe SolidusAfterpay::Gateway do
@@ -389,6 +391,26 @@ RSpec.describe SolidusAfterpay::Gateway do
 
     context 'with an invalid params', vcr: 'find_payment/invalid' do
       let(:order_id) { 'INVALID_ORDER_ID' }
+
+      it 'returns nil' do
+        is_expected.to be_nil
+      end
+    end
+  end
+
+  describe '#find_order' do
+    subject(:response) { gateway.find_order(token: token) }
+
+    let(:token) { '002.cb9qevbs1o4el3adh817hqkotkbv4b8u1jkekofd3nb2m8lu' }
+
+    context 'with valid params', vcr: 'find_order/valid' do
+      it 'retrieves the Afterpay order' do
+        expect(response).to include(token: token)
+      end
+    end
+
+    context 'with an invalid params', vcr: 'find_order/invalid' do
+      let(:token) { 'INVALID_TOKEN' }
 
       it 'returns nil' do
         is_expected.to be_nil

@@ -128,6 +128,12 @@ module SolidusAfterpay
       nil
     end
 
+    def find_order(token:)
+      ::Afterpay::API::Order::Find.call(token: token).body
+    rescue ::Afterpay::BaseError
+      nil
+    end
+
     def retrieve_configuration
       ::Afterpay::API::Configuration::Retrieve.call.body
     rescue ::Afterpay::BaseError

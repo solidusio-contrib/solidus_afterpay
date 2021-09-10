@@ -1,0 +1,64 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://global-api-sandbox.afterpay.com/v2/checkouts/INVALID_TOKEN
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - SolidusAfterpay/0.1.0 (Solidus/3.1.0.alpha; Ruby/2.7.3; Merchant/100101481)
+        https://
+      Authorization:
+      - Basic <ENCODED_AUTH_HEADER>
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 412
+      message: Precondition Failed
+    headers:
+      Date:
+      - Fri, 10 Sep 2021 12:55:37 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '126'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 68c8cfcace07cd42-FCO
+      Cache-Control:
+      - private, no-cache, no-store, no-transform, must-revalidate, max-age=0
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Expect-Ct:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      Http-Correlation-Id:
+      - n77tvm4ti5ngv6qbdz2o5vxan4
+      X-Envoy-Upstream-Service-Time:
+      - '9'
+      Set-Cookie:
+      - __cf_bm=u7iiZFdsOy9xrjOBMLoGsG1bhrLVARFRB1GlF.L_jLk-1631278537-0-ASztXHMHJmoTvt4gncQmxFsGkLaaD5ce0qXpvrva6GUGea4Y1iCdSXmzKOC2oEv/fB5Bj5W5TM3wHOEwof0LGNyGsWp0Oqb/cdPCJnsypwQJ;
+        path=/; expires=Fri, 10-Sep-21 13:25:37 GMT; domain=.afterpay.com; HttpOnly;
+        Secure; SameSite=None
+      Vary:
+      - Accept-Encoding
+      Server:
+      - cloudflare
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "errorCode" : "invalid_token",
+          "errorId" : "632c34635772cf87",
+          "message" : "Invalid token",
+          "httpStatusCode" : 412
+        }
+  recorded_at: Fri, 10 Sep 2021 12:55:37 GMT
+recorded_with: VCR 6.0.0
