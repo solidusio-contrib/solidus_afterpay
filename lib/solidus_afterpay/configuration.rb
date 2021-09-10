@@ -3,6 +3,10 @@
 module SolidusAfterpay
   class Configuration
     attr_accessor :use_solidus_api
+
+    def dummy_email
+      'afterpay@dummy.com'
+    end
   end
 
   class << self
