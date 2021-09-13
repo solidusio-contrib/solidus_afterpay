@@ -1,7 +1,6 @@
+[![CircleCI](https://circleci.com/gh/nebulab/solidus_afterpay.svg?style=shield)](https://circleci.com/gh/nebulab/solidus_afterpay)
+[![codecov](https://codecov.io/gh/nebulab/solidus_afterpay/branch/main/graph/badge.svg)](https://codecov.io/gh/solidusio/solidus_afterpay)
 # Solidus Afterpay
-
-[![CircleCI](https://circleci.com/gh/solidusio-contrib/solidus_afterpay.svg?style=shield)](https://circleci.com/gh/solidusio-contrib/solidus_afterpay)
-[![codecov](https://codecov.io/gh/solidusio-contrib/solidus_afterpay/branch/master/graph/badge.svg)](https://codecov.io/gh/solidusio-contrib/solidus_afterpay)
 
 <!-- Explain what your extension does. -->
 
