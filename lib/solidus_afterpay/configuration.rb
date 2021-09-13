@@ -3,7 +3,7 @@
 module SolidusAfterpay
   class Configuration
     attr_accessor :use_solidus_api
-    attr_writer :shipping_rate_builder_service_class
+    attr_writer :shipping_rate_builder_service_class, :cache_expiry
 
     def dummy_email
       'afterpay@dummy.com'
@@ -17,6 +17,10 @@ module SolidusAfterpay
     def update_order_attributes_service_class
       @update_order_attributes_service_class ||= 'SolidusAfterpay::UpdateOrderAttributesService'
       @update_order_attributes_service_class.constantize
+    end
+
+    def cache_expiry
+      @cache_expiry ||= 1.day
     end
   end
 
