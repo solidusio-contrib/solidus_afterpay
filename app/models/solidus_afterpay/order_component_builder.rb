@@ -4,17 +4,20 @@ require 'afterpay'
 
 module SolidusAfterpay
   class OrderComponentBuilder
-    attr_reader :order, :redirect_confirm_url, :redirect_cancel_url
+    attr_reader :order, :mode, :redirect_confirm_url, :redirect_cancel_url, :popup_origin_url
 
-    def initialize(order:, redirect_confirm_url:, redirect_cancel_url:)
+    def initialize(order:, mode:, redirect_confirm_url:, redirect_cancel_url:, popup_origin_url:)
       @order = order
+      @mode = mode
       @redirect_confirm_url = redirect_confirm_url
       @redirect_cancel_url = redirect_cancel_url
+      @popup_origin_url = popup_origin_url
     end
 
     def call
       ::Afterpay::Components::Order.new(
         amount: amount,
+        mode: mode,
         consumer: consumer,
         billing: address(order.billing_address),
         shipping: address(order.shipping_address),
@@ -27,6 +30,8 @@ module SolidusAfterpay
     private
 
     def address(address)
+      return unless address
+
       name = if SolidusSupport.combined_first_and_last_name_in_address?
                address.name
              else
@@ -45,6 +50,8 @@ module SolidusAfterpay
     end
 
     def consumer
+      return unless order.billing_address
+
       if SolidusSupport.combined_first_and_last_name_in_address?
         name_components = ::Spree::Address::Name.new(order.billing_address.name)
         first_name = name_components.first_name
@@ -55,7 +62,7 @@ module SolidusAfterpay
       end
 
       ::Afterpay::Components::Consumer.new(
-        email: order.user&.email || order.email,
+        email: order.user&.email || order.email || 'afterpay@guest.com',
         given_names: first_name,
         surname: last_name,
         phone: order.billing_address.phone
@@ -72,7 +79,8 @@ module SolidusAfterpay
     def merchant
       ::Afterpay::Components::Merchant.new(
         redirect_confirm_url: redirect_confirm_url,
-        redirect_cancel_url: redirect_cancel_url
+        redirect_cancel_url: redirect_cancel_url,
+        popup_origin_url: popup_origin_url
       )
     end
 

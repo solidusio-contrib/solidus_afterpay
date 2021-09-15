@@ -17,49 +17,52 @@ Bundle your dependencies and run the installation generator:
 ```shell
 bin/rails generate solidus_afterpay:install
 ```
+
 ## Basic Setup
 
 ### Retrieve Afterpay account details
+
 You'll need the following account details:
+
 - `Merchant ID`
 - `Secret key`
 
 These values can be obtained by calling the `Merchant Support` [here](https://developers.afterpay.com/afterpay-online/docs/merchant-support).
 
 ### Create a new payment method
+
 Payment methods can accept preferences either directly entered in admin, or from a static source in code. For most projects we recommend using a static source, so that sensitive account credentials are not stored in the database.
 
 1. Set static preferences in an initializer
-  ```ruby
-  # config/initializers/spree.rb
-  Spree::Config.configure do |config|
-    config.static_model_preferences.add(
-      SolidusAfterpay::PaymentMethod,
-      'afterpay_credentials', {
-        merchant_id: ENV['AFTERPAY_MERCHANT_ID'],
-        secret_key: ENV['AFTERPAY_SECRET_KEY'],
-      }
-    )
-  end
-  ```
+
+```ruby
+# config/initializers/spree.rb
+Spree::Config.configure do |config|
+  config.static_model_preferences.add(
+    SolidusAfterpay::PaymentMethod,
+    'afterpay_credentials', {
+      merchant_id: ENV['AFTERPAY_MERCHANT_ID'],
+      secret_key: ENV['AFTERPAY_SECRET_KEY'],
+    }
+  )
+end
+```
 
 2. Visit `/admin/payment_methods/new`
-
 3. Set `provider` to SolidusAfterpay::PaymentMethod
-
 4. Click "Save"
-
 5. Choose `afterpay_credentials` from the `Preference Source` select
-
 6. Click `Update` to save
 
 Alternatively, create a payment method from the Rails console with:
+
 ```ruby
 SolidusAfterpay::PaymentMethod.new(
   name: "Afterpay",
   preference_source: "afterpay_credentials"
 ).save
 ```
+
 ## Deferred Payment Flow
 
 This flow completes the payment approval and starts the consumer's payment plan, but does not initiate the settlement process. This flow allows settlement of merchant funds to be deferred until order fulfilment can be confirmed.
@@ -70,6 +73,26 @@ For more info about the deferred payment flow click [here](https://developers.af
 
 ## Usage
 
+### Customizing shipping rate builder
+
+By default, the extension will build the shipping rates based on the default Solidus shipments building the Afterpay array.
+
+If you want to override this logic, you can provide your own `shipping_rate_calculator_class`.
+
+### Customizing update order attributes service
+
+By default, the extension will update the order payment_attributes, order email attribute and shipments attributes based on the Afterpay returned data.
+
+If you want to override this logic, adding/removing attributes, you can provide your own `update_order_attributes_service_class`.
+
+### Express checkout from the cart
+
+An Afterpay button can also be included on the cart view to enable express checkouts:
+
+```ruby
+render "solidus_afterpay/afterpay_checkout_button"
+```
+
 ### Afterpay Messaging
 
 Afterpay offers an on-site messaging component to notify the customer that there are financing options available.
@@ -79,6 +102,7 @@ To add the `Afterpay messaging` simply add the `Afterpay messaging partial` into
 ```erb
 <%= render "spree/shared/afterpay_messaging", min: nil, max: nil, data: { amount: <Product price>, locale: "en_US", currency: "USD" } %>
 ```
+
 The amount, locale and currency are required in order to work properly.
 
 This will automatically render an Afterpay messaging icon.
@@ -92,6 +116,7 @@ For example if you would write...
 ```erb
 <%= render "spree/shared/afterpay_messaging", min: nil, max: 25, data: { amount: <Product price>, locale: "en_US", currency: "USD" } %>
 ```
+
 And a product price is `28.99`, Afterpay will display on that product that Afterpay is only available for orders between 1$ and 25$.
 
 The default value for min is 1$.

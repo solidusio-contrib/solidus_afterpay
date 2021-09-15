@@ -1,0 +1,120 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://global-api-sandbox.afterpay.com/v2/checkouts/002.cb9qevbs1o4el3adh817hqkotkbv4b8u1jkekofd3nb2m8lu
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - SolidusAfterpay/0.1.0 (Solidus/3.1.0.alpha; Ruby/2.7.3; Merchant/100101481)
+        https://
+      Authorization:
+      - Basic <ENCODED_AUTH_HEADER>
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 10 Sep 2021 12:55:37 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '658'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 68c8cfcc9ab2cd22-FCO
+      Cache-Control:
+      - private, no-cache, no-store, no-transform, must-revalidate, max-age=0
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Accept-Encoding
+      Cf-Cache-Status:
+      - DYNAMIC
+      Expect-Ct:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      Http-Correlation-Id:
+      - rphr5wjy4lhxns243hqra4me7i
+      X-Envoy-Upstream-Service-Time:
+      - '10'
+      Set-Cookie:
+      - __cf_bm=QktDNLQZpZjhjrQQdeOBa7v_55ZFkHI18nQLWFQE6IE-1631278537-0-ASrEesj20zPAWBG+xXE/Kv0XFWsFTxlokJ+G3tawp7KedkMaZ08Sw78BcT+MQ1oDDQySJopfnSAXUwdlQ+canyDEGn3Q3nChBOb4BZyrwhky;
+        path=/; expires=Fri, 10-Sep-21 13:25:37 GMT; domain=.afterpay.com; HttpOnly;
+        Secure; SameSite=None
+      Server:
+      - cloudflare
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "token" : "002.cb9qevbs1o4el3adh817hqkotkbv4b8u1jkekofd3nb2m8lu",
+          "expires" : "2021-09-10T15:54:05.463Z",
+          "redirectCheckoutUrl" : "https://portal.sandbox.afterpay.com/us/checkout/?token=002.cb9qevbs1o4el3adh817hqkotkbv4b8u1jkekofd3nb2m8lu",
+          "amount" : {
+            "amount" : "53.53",
+            "currency" : "USD"
+          },
+          "consumer" : {
+            "phoneNumber" : "",
+            "givenNames" : "John",
+            "surname" : "Doe",
+            "email" : "andreavassallo@nebulab.com"
+          },
+          "billing" : {
+            "name" : "John Doe",
+            "line1" : "8125 Centre St",
+            "line2" : "",
+            "area1" : "Citronelle",
+            "region" : "AL",
+            "postcode" : "36522",
+            "phoneNumber" : "12123234223"
+          },
+          "shipping" : {
+            "name" : "John Doe",
+            "line1" : "8125 Centre St",
+            "area1" : "Citronelle",
+            "region" : "AL",
+            "postcode" : "36522",
+            "countryCode" : "US",
+            "phoneNumber" : "12123234223"
+          },
+          "courier" : { },
+          "items" : [ {
+            "name" : "Solidus T-Shirt",
+            "sku" : "SOL-00003",
+            "quantity" : 1,
+            "price" : {
+              "amount" : "19.99",
+              "currency" : "USD"
+            }
+          }, {
+            "name" : "Solidus Snapback Cap",
+            "sku" : "SOL-SNC01",
+            "quantity" : 1,
+            "price" : {
+              "amount" : "15.99",
+              "currency" : "USD"
+            }
+          } ],
+          "merchant" : {
+            "redirectConfirmUrl" : "http://localhost:5000/solidus_afterpay/callbacks/confirm?order_number=R063381025&payment_method_id=4",
+            "redirectCancelUrl" : "http://localhost:5000/solidus_afterpay/callbacks/cancel?order_number=R063381025&payment_method_id=4",
+            "popupOriginUrl" : "http://localhost:5000/cart"
+          },
+          "discounts" : [ ],
+          "merchantReference" : "R063381025",
+          "shippingOptionIdentifier" : "999",
+          "shippingOptions" : {
+            "supportedShippingCountries" : [ ]
+          }
+        }
+  recorded_at: Fri, 10 Sep 2021 12:55:37 GMT
+recorded_with: VCR 6.0.0

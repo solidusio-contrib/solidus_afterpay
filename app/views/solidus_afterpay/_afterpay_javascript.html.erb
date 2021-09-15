@@ -1,5 +1,8 @@
+<% payment_method = SolidusAfterpay::PaymentMethod.active.first unless local_assigns[:payment_method] %>
 <% if payment_method.present? %>
   <% content_for :head do %>
-    <%= include_afterpay_js(test_mode: payment_method.preferred_test_mode) %>
+    <%= include_afterpay_js(
+      test_mode: payment_method.preferred_test_mode,
+      merchant_key: payment_method.preferred_merchant_key) %>
   <% end %>
 <% end %>

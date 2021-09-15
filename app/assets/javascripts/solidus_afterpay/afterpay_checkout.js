@@ -1,4 +1,4 @@
-$(function () {
+$(document).bind("afterpay.loaded", function () {
   function enableSubmit() {
     /* If we're using jquery-ujs on the frontend, it will automatically disable
      * the submit button, but do so in a setTimeout here:

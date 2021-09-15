@@ -8,7 +8,15 @@ RSpec.describe SolidusAfterpay::AfterpayHelper, type: :helper do
       let(:test_mode) { false }
 
       it 'includes the production javascript' do
-        is_expected.to eq('<script src="https://portal.afterpay.com/afterpay.js"></script>')
+        is_expected
+          .to eq(
+            <<-SCRIPT.squish
+              <script src="https://portal.afterpay.com/afterpay-async.js"
+                async="async"
+                defer="defer"
+                onload="initAfterpay()"></script>
+            SCRIPT
+          )
       end
     end
 
@@ -16,7 +24,15 @@ RSpec.describe SolidusAfterpay::AfterpayHelper, type: :helper do
       let(:test_mode) { true }
 
       it 'includes the sandbox javascript' do
-        is_expected.to eq('<script src="https://portal.sandbox.afterpay.com/afterpay.js"></script>')
+        is_expected
+          .to eq(
+            <<-SCRIPT.squish
+              <script src="https://portal.sandbox.afterpay.com/afterpay-async.js"
+                async="async"
+                defer="defer"
+                onload="initAfterpay()"></script>
+            SCRIPT
+          )
       end
     end
   end
