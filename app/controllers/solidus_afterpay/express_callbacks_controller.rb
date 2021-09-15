@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module SolidusAfterpay
-  class ExpressCallbacksController < SolidusAfterpay::BaseController
+  class ExpressCallbacksController < SolidusAfterpay.api_base_controller_parent_class
     def create
       authorize! :update, order, order_token
 
