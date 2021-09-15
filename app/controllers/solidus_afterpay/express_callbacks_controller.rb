@@ -24,7 +24,7 @@ module SolidusAfterpay
       order.next!
       order.next!
 
-      render json: { redirect_url: checkout_state_url(order.state) }, status: :ok
+      SolidusAfterpay.config.use_solidus_api ? solidus_api_response : solidus_frontend_response
     end
 
     def update
@@ -56,6 +56,18 @@ module SolidusAfterpay
 
     def payment_method
       @payment_method ||= SolidusAfterpay::PaymentMethod.active.find(params[:payment_method_id])
+    end
+
+    def solidus_api_response
+      respond_with(
+        order.reload,
+        status: :ok,
+        default_template: 'spree/api/orders/show'
+      )
+    end
+
+    def solidus_frontend_response
+      render json: { redirect_url: checkout_state_url(order.state) }, status: :ok
     end
   end
 end

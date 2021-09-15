@@ -200,7 +200,11 @@ describe SolidusAfterpay::ExpressCallbacksController, type: :request do
         end
       end
 
-      context 'when the use solidus api config is set to true', use_solidus_api: true do
+      context(
+        'when the use solidus api config is set to true',
+        use_solidus_api: true,
+        vcr: 'retrieve_configuration/valid'
+      ) do
         context 'when the user is not authorized' do
           it 'returns 401 status code' do
             request
@@ -224,6 +228,16 @@ describe SolidusAfterpay::ExpressCallbacksController, type: :request do
             request
             expect(response).to have_http_status(:ok)
           end
+
+          # rubocop:disable RSpec/MultipleExpectations
+          it 'returns the order data' do
+            request
+            expect(json_response['id']).to eq(order.id)
+            expect(json_response['number']).to eq(order.number)
+            expect(json_response['state']).to eq('confirm')
+            expect(json_response['payment_methods'].count).to eq(1)
+          end
+          # rubocop:enable RSpec/MultipleExpectations
         end
       end
     end
