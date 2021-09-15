@@ -6,9 +6,6 @@ module SolidusAfterpay
     preference :secret_key, :string
     preference :deferred, :boolean
     preference :popup_window, :boolean
-    preference :minimum_amount, :decimal
-    preference :maximum_amount, :decimal
-    preference :currency, :string
     preference :merchant_key, :string
 
     def gateway_class
