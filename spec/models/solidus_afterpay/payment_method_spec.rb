@@ -61,69 +61,75 @@ RSpec.describe SolidusAfterpay::PaymentMethod, type: :model do
   describe "#available_for_order?" do
     subject { payment_method.available_for_order?(order) }
 
-    let(:preferred_minimum_amount) { nil }
-    let(:preferred_maximum_amount) { nil }
-    let(:preferred_currency) { nil }
+    let(:cache) { Rails.cache }
 
-    let(:payment_method) do
-      described_class.new(
-        preferred_minimum_amount: preferred_minimum_amount,
-        preferred_maximum_amount: preferred_maximum_amount,
-        preferred_currency: preferred_currency
-      )
-    end
+    let(:payment_method) { described_class.new }
 
     let(:order) { build(:order, currency: order_currency, total: order_total) }
     let(:order_total) { 5 }
     let(:order_currency) { 'USD' }
 
-    let(:configuration) do
-      require 'hashie'
+    context "with cache" do
+      after do
+        cache.clear
+      end
 
-      Hashie::Mash.new({
-        minimumAmount: { amount: '1', currency: 'USD' },
-        maximumAmount: { amount: '10', currency: 'USD' }
-      })
-    end
-
-    before do
-      allow(payment_method.gateway).to receive(:retrieve_configuration).and_return(configuration)
-    end
-
-    context 'when preference settings are nil' do
       context 'when order total is inside the range' do
+        before do
+          cache.write("solidus_afterpay_configuration_maximumAmount_currency", "USD")
+          cache.write("solidus_afterpay_configuration_maximumAmount_amount", 10.0)
+          cache.write("solidus_afterpay_configuration_minimumAmount_amount", 1.0)
+        end
+
         it { is_expected.to be(true) }
       end
 
       context 'when order total is outside the range' do
-        let(:order_total) { 11 }
+        before do
+          cache.write("solidus_afterpay_configuration_maximumAmount_currency", "USD")
+          cache.write("solidus_afterpay_configuration_maximumAmount_amount", 4.0)
+          cache.write("solidus_afterpay_configuration_minimumAmount_amount", 1.0)
+        end
 
         it { is_expected.to be(false) }
       end
 
       context 'when order currency is different from afterpay configuration' do
-        let(:order_currency) { 'EUR' }
+        before do
+          cache.write("solidus_afterpay_configuration_maximumAmount_amount", 10.0)
+          cache.write("solidus_afterpay_configuration_minimumAmount_amount", 1.0)
+          cache.write("solidus_afterpay_configuration_maximumAmount_currency", "EUR")
+        end
 
         it { is_expected.to be(false) }
       end
 
-      context "when afterpay configuration doesn't include the minumumAmount" do
-        let(:configuration) do
-          require 'hashie'
-
-          Hashie::Mash.new({ maximumAmount: { amount: '10', currency: 'USD' } })
+      context 'when order currency is the same from afterpay configuration' do
+        before do
+          cache.write("solidus_afterpay_configuration_maximumAmount_amount", 10.0)
+          cache.write("solidus_afterpay_configuration_minimumAmount_amount", 1.0)
+          cache.write("solidus_afterpay_configuration_maximumAmount_currency", "USD")
         end
 
         it { is_expected.to be(true) }
       end
     end
 
-    context 'when preference settings are not nil' do
-      let(:preferred_minimum_amount) { 1 }
-      let(:preferred_maximum_amount) { 10 }
-      let(:preferred_currency) { 'USD' }
+    context 'when there is no cache' do
+      let(:configuration) do
+        require 'hashie'
 
-      context 'when order total is inside the range' do
+        Hashie::Mash.new({
+          minimumAmount: { amount: '1', currency: 'USD' },
+          maximumAmount: { amount: '10', currency: 'USD' }
+        })
+      end
+
+      before do
+        allow(payment_method.gateway).to receive(:retrieve_configuration).and_return(configuration)
+      end
+
+      context 'when order total is inside the range and the currency is the same from afterpay configuration' do
         it { is_expected.to be(true) }
       end
 

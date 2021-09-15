@@ -6,9 +6,6 @@ module SolidusAfterpay
     preference :secret_key, :string
     preference :deferred, :boolean
     preference :popup_window, :boolean
-    preference :minimum_amount, :decimal
-    preference :maximum_amount, :decimal
-    preference :currency, :string
     preference :merchant_key, :string
 
     def gateway_class
@@ -40,18 +37,41 @@ module SolidusAfterpay
     private
 
     def available_payment_range
-      min = preferred_minimum_amount || configuration&.minimumAmount&.amount.to_f
-      max = preferred_maximum_amount || configuration&.maximumAmount&.amount.to_f
-
-      min..max
-    end
-
-    def available_payment_currency
-      preferred_currency || configuration&.maximumAmount&.currency
+      minimum_amount..maximum_amount
     end
 
     def configuration
       @configuration ||= gateway.retrieve_configuration
+    end
+
+    def minimum_amount
+      @minimum_amount ||= fetch_configuration(:minimumAmount, :amount).to_f
+    end
+
+    def maximum_amount
+      @maximum_amount ||= fetch_configuration(:maximumAmount, :amount).to_f
+    end
+
+    def available_payment_currency
+      @available_payment_currency = fetch_configuration(:maximumAmount, :currency)
+    end
+
+    def fetch_configuration(*keys)
+      cache_key = "solidus_afterpay_configuration_#{keys.join('_')}"
+
+      return Rails.cache.read(cache_key) if Rails.cache.exist?(cache_key)
+
+      value = configuration&.dig(*keys)
+
+      unless configuration.nil?
+        Rails.cache.write(
+          cache_key,
+          value,
+          expires_in: SolidusAfterpay.config.cache_expiry
+        )
+      end
+
+      value
     end
   end
 end
