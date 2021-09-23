@@ -6,6 +6,7 @@ module SolidusAfterpay
     preference :secret_key, :string
     preference :popup_window, :boolean
     preference :merchant_key, :string
+    preference :excluded_products, :string
 
     def gateway_class
       SolidusAfterpay::Gateway
@@ -30,10 +31,18 @@ module SolidusAfterpay
     end
 
     def available_for_order?(order)
+      return false if order.line_items.any?{ |item| excluded_product_ids.include? item.variant.product_id }
+
       available_payment_currency == order.currency && available_payment_range.include?(order.total)
     end
 
     private
+
+    def excluded_product_ids
+      return [] if preferred_excluded_products.nil?
+
+      preferred_excluded_products.split(",").map(&:to_i)
+    end
 
     def available_payment_range
       minimum_amount..maximum_amount
