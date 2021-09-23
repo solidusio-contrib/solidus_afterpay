@@ -36,6 +36,10 @@ module SolidusAfterpay
       available_payment_currency == order.currency && available_payment_range.include?(order.total)
     end
 
+    def excluded_product?(product)
+      excluded_product_ids.include? product.id
+    end
+
     private
 
     def excluded_product_ids
