@@ -99,8 +99,10 @@ Afterpay offers an on-site messaging component to notify the customer that there
 
 To add the `Afterpay messaging` simply add the `Afterpay messaging partial` into your `html.erb` file, like this.
 
+You need to provide the product as well, so you can exclude products from `Afterpay messaging`.
+
 ```erb
-<%= render "spree/shared/afterpay_messaging", min: nil, max: nil, data: { amount: <Product price>, locale: "en_US", currency: "USD" } %>
+<%= render "spree/shared/afterpay_messaging", min: nil, max: nil, product: <Product>, data: { amount: <Product price>, locale: "en_US", currency: "USD" } %>
 ```
 
 The amount, locale and currency are required in order to work properly.
@@ -114,7 +116,7 @@ The min attribute is to configure from which amount Afterpay should be available
 For example if you would write...
 
 ```erb
-<%= render "spree/shared/afterpay_messaging", min: nil, max: 25, data: { amount: <Product price>, locale: "en_US", currency: "USD" } %>
+<%= render "spree/shared/afterpay_messaging", min: nil, max: 25, product: <Product>, data: { amount: <Product price>, locale: "en_US", currency: "USD" } %>
 ```
 
 And a product price is `28.99`, Afterpay will display on that product that Afterpay is only available for orders between 1$ and 25$.
@@ -128,7 +130,7 @@ Click [here](https://developers.afterpay.com/afterpay-online/docs/advanced-usage
 If you would like to change the size of the Afterpay messaging you simply add size to the `data` hash. For example...
 
 ```erb
-<%= render "spree/shared/afterpay_messaging", min: nil, max: nil, data: { amount: <Product price>, locale: "en_US", currency: "USD", size: "sm" } %>
+<%= render "spree/shared/afterpay_messaging", min: nil, max: nil, product: <Product>, data: { amount: <Product price>, locale: "en_US", currency: "USD", size: "sm" } %>
 ```
 
 ## Development
