@@ -16,8 +16,8 @@ RSpec.describe SolidusAfterpay::Gateway do
     subject(:response) { gateway.authorize(amount, payment_source, gateway_options) }
 
     let(:order_token) { '002.m6d9jkrtv1p0j4jqslklhfq9k4nl54jo2530d58kf6snpqq1' }
-    let(:deferred?) { false }
-    let(:payment_method) { build(:afterpay_payment_method, preferred_deferred: deferred?) }
+    let(:auto_capture) { true }
+    let(:payment_method) { build(:afterpay_payment_method, auto_capture: auto_capture) }
 
     let(:amount) { 1000 }
     let(:payment_source) { build(:afterpay_payment_source, token: order_token, payment_method: payment_method) }
@@ -30,7 +30,7 @@ RSpec.describe SolidusAfterpay::Gateway do
     end
 
     context 'with the deferred flow' do
-      let(:deferred?) { true }
+      let(:auto_capture) { false }
 
       context 'with valid params', vcr: 'deferred/authorize/valid' do
         it 'authorize the afterpay payment with the order_token' do
@@ -78,9 +78,9 @@ RSpec.describe SolidusAfterpay::Gateway do
     subject(:response) { gateway.capture(amount, response_code, gateway_options) }
 
     let(:order_token) { '002.nt7e0ioqj00fh0ua1nbqcj6vcn9obtfsglqvrj9ijpo3edfc' }
-    let(:deferred?) { false }
+    let(:auto_capture) { true }
     let(:payment_source) { build(:afterpay_payment_source, token: order_token) }
-    let(:payment_method) { build(:afterpay_payment_method, preferred_deferred: deferred?) }
+    let(:payment_method) { build(:afterpay_payment_method, auto_capture: auto_capture) }
     let(:payment) { build(:afterpay_payment, source: payment_source, payment_method: payment_method) }
 
     let(:amount) { 1000 }
@@ -130,7 +130,7 @@ RSpec.describe SolidusAfterpay::Gateway do
     end
 
     context 'with the deferred flow' do
-      let(:deferred?) { true }
+      let(:auto_capture) { false }
 
       context 'with valid params', vcr: 'deferred/capture/valid' do
         it 'captures the afterpay payment with the order_id' do
@@ -160,8 +160,8 @@ RSpec.describe SolidusAfterpay::Gateway do
     subject(:response) { gateway.purchase(amount, payment_source, gateway_options) }
 
     let(:order_token) { '002.nt7e0ioqj00fh0ua1nbqcj6vcn9obtfsglqvrj9ijpo3edfc' }
-    let(:deferred?) { false }
-    let(:payment_method) { build(:afterpay_payment_method, preferred_deferred: deferred?) }
+    let(:auto_capture) { true }
+    let(:payment_method) { build(:afterpay_payment_method, auto_capture: auto_capture) }
     let(:payment) { build(:afterpay_payment, source: payment_source, payment_method: payment_method) }
 
     let(:amount) { 1000 }
@@ -211,7 +211,7 @@ RSpec.describe SolidusAfterpay::Gateway do
     end
 
     context 'with the deferred flow' do
-      let(:deferred?) { true }
+      let(:auto_capture) { false }
 
       context 'with valid params', vcr: 'deferred/authorize/valid' do
         it 'authorize and captures the afterpay payment with the order_token' do
@@ -293,9 +293,9 @@ RSpec.describe SolidusAfterpay::Gateway do
   describe '#void' do
     subject(:response) { gateway.void(response_code, gateway_options) }
 
-    let(:deferred?) { false }
+    let(:auto_capture) { true }
     let(:amount) { 10 }
-    let(:payment_method) { build(:afterpay_payment_method, preferred_deferred: deferred?) }
+    let(:payment_method) { build(:afterpay_payment_method, auto_capture: auto_capture) }
     let(:payment) { build(:afterpay_payment, payment_method: payment_method, amount: amount) }
 
     let(:response_code) { '100101785223' }
@@ -316,7 +316,7 @@ RSpec.describe SolidusAfterpay::Gateway do
     end
 
     context 'with the deferred flow' do
-      let(:deferred?) { true }
+      let(:auto_capture) { false }
 
       context 'with valid params', vcr: 'deferred/void/valid' do
         it 'voids the payment using the response_code' do

@@ -13,7 +13,7 @@ module SolidusAfterpay
     def can_void?(payment)
       payment_method = payment.payment_method
 
-      return false unless payment_method.preferred_deferred
+      return false if payment_method.auto_capture
 
       payment_state = payment_method.gateway.find_payment(order_id: payment.response_code).try(:[], :paymentState)
 
