@@ -63,9 +63,16 @@ RSpec.describe SolidusAfterpay::PaymentMethod, type: :model do
 
     let(:cache) { Rails.cache }
 
-    let(:payment_method) { described_class.new }
-
-    let(:order) { build(:order, currency: order_currency, total: order_total) }
+    let(:product) { create(:base_product) }
+    let(:excluded_product_ids) { '' }
+    let(:payment_method) { create(:afterpay_payment_method, preferred_excluded_products: excluded_product_ids) }
+    let(:order) {
+      build(:order_with_line_items, currency: order_currency, total: order_total,
+     line_items_attributes: line_items_attributes)
+    }
+    let(:line_items_attributes) do
+      [{ product: product }]
+    end
     let(:order_total) { 5 }
     let(:order_currency) { 'USD' }
 
@@ -143,6 +150,44 @@ RSpec.describe SolidusAfterpay::PaymentMethod, type: :model do
         let(:order_currency) { 'EUR' }
 
         it { is_expected.to be(false) }
+      end
+    end
+
+    context "when the items are excluded from the payment_method" do
+      let(:excluded_product_ids) { product.id.to_s }
+
+      context "when the id's of all the products are excluded" do
+        it { is_expected.to be_falsey }
+      end
+
+      context "when the id of one of the products is excluded" do
+        let(:second_product) { create(:base_product) }
+        let(:line_items_attributes) do
+          [{ product: product }, { product: second_product }]
+        end
+
+        it { is_expected.to be(false) }
+      end
+    end
+
+    context "when none of the items are excluded from the payment_method" do
+      let(:configuration) do
+        require 'hashie'
+
+        Hashie::Mash.new({
+          minimumAmount: { amount: '1', currency: 'USD' },
+          maximumAmount: { amount: '1000', currency: 'USD' }
+        })
+      end
+
+      let(:excluded_product_ids) { '' }
+
+      before do
+        allow(payment_method.gateway).to receive(:retrieve_configuration).and_return(configuration)
+      end
+
+      it "returns true when none of the products are excluded" do
+        is_expected.to be(true)
       end
     end
   end
