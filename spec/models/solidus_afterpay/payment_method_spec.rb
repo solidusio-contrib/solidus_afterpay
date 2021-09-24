@@ -58,6 +58,24 @@ RSpec.describe SolidusAfterpay::PaymentMethod, type: :model do
     end
   end
 
+  describe "#excluded_product?" do
+    subject { payment_method.excluded_product?(product) }
+
+    let(:product) { create(:base_product) }
+    let(:excluded_product_ids) { product.id.to_s }
+    let(:payment_method) { described_class.new(preferred_excluded_products: excluded_product_ids) }
+
+    context 'when the product is excluded' do
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when the product is not excluded' do
+      let(:excluded_product_ids) { '' }
+
+      it { is_expected.to be_falsey }
+    end
+  end
+
   describe "#available_for_order?" do
     subject { payment_method.available_for_order?(order) }
 
