@@ -14,8 +14,8 @@ RSpec.describe SolidusAfterpay::PaymentSource, type: :model do
   describe '#can_void?' do
     subject { payment_source.can_void?(payment) }
 
-    let(:deferred?) { false }
-    let(:payment_method) { build(:afterpay_payment_method, preferred_deferred: deferred?) }
+    let(:auto_capture) { true }
+    let(:payment_method) { build(:afterpay_payment_method, auto_capture: auto_capture) }
     let(:payment) { build(:afterpay_payment, payment_method: payment_method) }
 
     context 'with the immediate flow' do
@@ -25,7 +25,7 @@ RSpec.describe SolidusAfterpay::PaymentSource, type: :model do
     end
 
     context 'with the deferred flow' do
-      let(:deferred?) { true }
+      let(:auto_capture) { false }
 
       let(:payment_state) { 'AUTH_APPROVED' }
       let(:gateway_response) { { paymentState: payment_state } }

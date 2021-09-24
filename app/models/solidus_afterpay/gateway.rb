@@ -18,7 +18,7 @@ module SolidusAfterpay
     def authorize(amount, payment_source, gateway_options)
       result = {}
 
-      if payment_source.payment_method.preferred_deferred
+      unless payment_source.payment_method.auto_capture
         response = ::Afterpay::API::Payment::Auth.call(
           payment: ::Afterpay::Components::Payment.new(
             token: payment_source.token,
@@ -45,10 +45,10 @@ module SolidusAfterpay
     def capture(amount, response_code, gateway_options)
       payment_method = gateway_options[:originator].payment_method
 
-      response = if payment_method.preferred_deferred
-                   deferred_capture(amount, response_code, gateway_options)
-                 else
+      response = if payment_method.auto_capture
                    immediate_capture(amount, response_code, gateway_options)
+                 else
+                   deferred_capture(amount, response_code, gateway_options)
                  end
       result = response.body
 
@@ -90,7 +90,7 @@ module SolidusAfterpay
     def void(response_code, gateway_options)
       payment_method = gateway_options[:originator].payment_method
 
-      unless payment_method.preferred_deferred
+      if payment_method.auto_capture
         return ActiveMerchant::Billing::Response.new(false, "Transaction can't be voided", {},
           error_code: 'void_not_allowed')
       end
