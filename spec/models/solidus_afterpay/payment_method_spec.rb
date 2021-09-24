@@ -61,31 +61,24 @@ RSpec.describe SolidusAfterpay::PaymentMethod, type: :model do
   describe "#available_for_order?" do
     subject { payment_method.available_for_order?(order) }
 
-    let(:cache) { Rails.cache }
-
     let(:product) { create(:base_product) }
     let(:excluded_product_ids) { '' }
     let(:payment_method) { create(:afterpay_payment_method, preferred_excluded_products: excluded_product_ids) }
     let(:order) {
-      build(:order_with_line_items, currency: order_currency, total: order_total,
+      build(:order_with_line_items, currency: order_currency,
      line_items_attributes: line_items_attributes)
     }
     let(:line_items_attributes) do
       [{ product: product }]
     end
-    let(:order_total) { 5 }
     let(:order_currency) { 'USD' }
 
     context "with cache" do
-      after do
-        cache.clear
-      end
-
       context 'when order total is inside the range' do
         before do
-          cache.write("solidus_afterpay_configuration_maximumAmount_currency", "USD")
-          cache.write("solidus_afterpay_configuration_maximumAmount_amount", 10.0)
-          cache.write("solidus_afterpay_configuration_minimumAmount_amount", 1.0)
+          Rails.cache.write("solidus_afterpay_configuration_maximumAmount_currency", "USD")
+          Rails.cache.write("solidus_afterpay_configuration_maximumAmount_amount", 1000.0)
+          Rails.cache.write("solidus_afterpay_configuration_minimumAmount_amount", 1.0)
         end
 
         it { is_expected.to be(true) }
@@ -93,9 +86,9 @@ RSpec.describe SolidusAfterpay::PaymentMethod, type: :model do
 
       context 'when order total is outside the range' do
         before do
-          cache.write("solidus_afterpay_configuration_maximumAmount_currency", "USD")
-          cache.write("solidus_afterpay_configuration_maximumAmount_amount", 4.0)
-          cache.write("solidus_afterpay_configuration_minimumAmount_amount", 1.0)
+          Rails.cache.write("solidus_afterpay_configuration_maximumAmount_currency", "USD")
+          Rails.cache.write("solidus_afterpay_configuration_maximumAmount_amount", 4.0)
+          Rails.cache.write("solidus_afterpay_configuration_minimumAmount_amount", 1.0)
         end
 
         it { is_expected.to be(false) }
@@ -103,9 +96,9 @@ RSpec.describe SolidusAfterpay::PaymentMethod, type: :model do
 
       context 'when order currency is different from afterpay configuration' do
         before do
-          cache.write("solidus_afterpay_configuration_maximumAmount_amount", 10.0)
-          cache.write("solidus_afterpay_configuration_minimumAmount_amount", 1.0)
-          cache.write("solidus_afterpay_configuration_maximumAmount_currency", "EUR")
+          Rails.cache.write("solidus_afterpay_configuration_maximumAmount_amount", 1000.0)
+          Rails.cache.write("solidus_afterpay_configuration_minimumAmount_amount", 1.0)
+          Rails.cache.write("solidus_afterpay_configuration_maximumAmount_currency", "EUR")
         end
 
         it { is_expected.to be(false) }
@@ -113,9 +106,9 @@ RSpec.describe SolidusAfterpay::PaymentMethod, type: :model do
 
       context 'when order currency is the same from afterpay configuration' do
         before do
-          cache.write("solidus_afterpay_configuration_maximumAmount_amount", 10.0)
-          cache.write("solidus_afterpay_configuration_minimumAmount_amount", 1.0)
-          cache.write("solidus_afterpay_configuration_maximumAmount_currency", "USD")
+          Rails.cache.write("solidus_afterpay_configuration_maximumAmount_amount", 1000.0)
+          Rails.cache.write("solidus_afterpay_configuration_minimumAmount_amount", 1.0)
+          Rails.cache.write("solidus_afterpay_configuration_maximumAmount_currency", "USD")
         end
 
         it { is_expected.to be(true) }
@@ -128,7 +121,7 @@ RSpec.describe SolidusAfterpay::PaymentMethod, type: :model do
 
         Hashie::Mash.new({
           minimumAmount: { amount: '1', currency: 'USD' },
-          maximumAmount: { amount: '10', currency: 'USD' }
+          maximumAmount: { amount: '110', currency: 'USD' }
         })
       end
 
@@ -141,9 +134,10 @@ RSpec.describe SolidusAfterpay::PaymentMethod, type: :model do
       end
 
       context 'when order total is outside the range' do
-        let(:order_total) { 11 }
-
-        it { is_expected.to be(false) }
+        it do
+          order.update(total: 111)
+          is_expected.to be(false)
+        end
       end
 
       context 'when order currency is different from afterpay configuration' do
@@ -183,6 +177,7 @@ RSpec.describe SolidusAfterpay::PaymentMethod, type: :model do
       let(:excluded_product_ids) { '' }
 
       before do
+        Rails.cache.clear
         allow(payment_method.gateway).to receive(:retrieve_configuration).and_return(configuration)
       end
 
