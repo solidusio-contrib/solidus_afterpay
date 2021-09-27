@@ -58,27 +58,45 @@ RSpec.describe SolidusAfterpay::PaymentMethod, type: :model do
     end
   end
 
+  describe "#excluded_product?" do
+    subject { payment_method.excluded_product?(product) }
+
+    let(:product) { create(:base_product) }
+    let(:excluded_product_ids) { product.id.to_s }
+    let(:payment_method) { described_class.new(preferred_excluded_products: excluded_product_ids) }
+
+    context 'when the product is excluded' do
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when the product is not excluded' do
+      let(:excluded_product_ids) { '' }
+
+      it { is_expected.to be_falsey }
+    end
+  end
+
   describe "#available_for_order?" do
     subject { payment_method.available_for_order?(order) }
 
-    let(:cache) { Rails.cache }
-
-    let(:payment_method) { described_class.new }
-
-    let(:order) { build(:order, currency: order_currency, total: order_total) }
-    let(:order_total) { 5 }
+    let(:product) { create(:base_product) }
+    let(:excluded_product_ids) { '' }
+    let(:payment_method) { create(:afterpay_payment_method, preferred_excluded_products: excluded_product_ids) }
+    let(:order) {
+      build(:order_with_line_items, currency: order_currency,
+     line_items_attributes: line_items_attributes)
+    }
+    let(:line_items_attributes) do
+      [{ product: product }]
+    end
     let(:order_currency) { 'USD' }
 
     context "with cache" do
-      after do
-        cache.clear
-      end
-
       context 'when order total is inside the range' do
         before do
-          cache.write("solidus_afterpay_configuration_maximumAmount_currency", "USD")
-          cache.write("solidus_afterpay_configuration_maximumAmount_amount", 10.0)
-          cache.write("solidus_afterpay_configuration_minimumAmount_amount", 1.0)
+          Rails.cache.write("solidus_afterpay_configuration_maximumAmount_currency", "USD")
+          Rails.cache.write("solidus_afterpay_configuration_maximumAmount_amount", 1000.0)
+          Rails.cache.write("solidus_afterpay_configuration_minimumAmount_amount", 1.0)
         end
 
         it { is_expected.to be(true) }
@@ -86,9 +104,9 @@ RSpec.describe SolidusAfterpay::PaymentMethod, type: :model do
 
       context 'when order total is outside the range' do
         before do
-          cache.write("solidus_afterpay_configuration_maximumAmount_currency", "USD")
-          cache.write("solidus_afterpay_configuration_maximumAmount_amount", 4.0)
-          cache.write("solidus_afterpay_configuration_minimumAmount_amount", 1.0)
+          Rails.cache.write("solidus_afterpay_configuration_maximumAmount_currency", "USD")
+          Rails.cache.write("solidus_afterpay_configuration_maximumAmount_amount", 4.0)
+          Rails.cache.write("solidus_afterpay_configuration_minimumAmount_amount", 1.0)
         end
 
         it { is_expected.to be(false) }
@@ -96,9 +114,9 @@ RSpec.describe SolidusAfterpay::PaymentMethod, type: :model do
 
       context 'when order currency is different from afterpay configuration' do
         before do
-          cache.write("solidus_afterpay_configuration_maximumAmount_amount", 10.0)
-          cache.write("solidus_afterpay_configuration_minimumAmount_amount", 1.0)
-          cache.write("solidus_afterpay_configuration_maximumAmount_currency", "EUR")
+          Rails.cache.write("solidus_afterpay_configuration_maximumAmount_amount", 1000.0)
+          Rails.cache.write("solidus_afterpay_configuration_minimumAmount_amount", 1.0)
+          Rails.cache.write("solidus_afterpay_configuration_maximumAmount_currency", "EUR")
         end
 
         it { is_expected.to be(false) }
@@ -106,9 +124,9 @@ RSpec.describe SolidusAfterpay::PaymentMethod, type: :model do
 
       context 'when order currency is the same from afterpay configuration' do
         before do
-          cache.write("solidus_afterpay_configuration_maximumAmount_amount", 10.0)
-          cache.write("solidus_afterpay_configuration_minimumAmount_amount", 1.0)
-          cache.write("solidus_afterpay_configuration_maximumAmount_currency", "USD")
+          Rails.cache.write("solidus_afterpay_configuration_maximumAmount_amount", 1000.0)
+          Rails.cache.write("solidus_afterpay_configuration_minimumAmount_amount", 1.0)
+          Rails.cache.write("solidus_afterpay_configuration_maximumAmount_currency", "USD")
         end
 
         it { is_expected.to be(true) }
@@ -121,7 +139,7 @@ RSpec.describe SolidusAfterpay::PaymentMethod, type: :model do
 
         Hashie::Mash.new({
           minimumAmount: { amount: '1', currency: 'USD' },
-          maximumAmount: { amount: '10', currency: 'USD' }
+          maximumAmount: { amount: '110', currency: 'USD' }
         })
       end
 
@@ -134,15 +152,55 @@ RSpec.describe SolidusAfterpay::PaymentMethod, type: :model do
       end
 
       context 'when order total is outside the range' do
-        let(:order_total) { 11 }
-
-        it { is_expected.to be(false) }
+        it do
+          order.update(total: 111)
+          is_expected.to be(false)
+        end
       end
 
       context 'when order currency is different from afterpay configuration' do
         let(:order_currency) { 'EUR' }
 
         it { is_expected.to be(false) }
+      end
+    end
+
+    context "when the items are excluded from the payment_method" do
+      let(:excluded_product_ids) { product.id.to_s }
+
+      context "when the id's of all the products are excluded" do
+        it { is_expected.to be_falsey }
+      end
+
+      context "when the id of one of the products is excluded" do
+        let(:second_product) { create(:base_product) }
+        let(:line_items_attributes) do
+          [{ product: product }, { product: second_product }]
+        end
+
+        it { is_expected.to be(false) }
+      end
+    end
+
+    context "when none of the items are excluded from the payment_method" do
+      let(:configuration) do
+        require 'hashie'
+
+        Hashie::Mash.new({
+          minimumAmount: { amount: '1', currency: 'USD' },
+          maximumAmount: { amount: '1000', currency: 'USD' }
+        })
+      end
+
+      let(:excluded_product_ids) { '' }
+
+      before do
+        Rails.cache.clear
+        allow(payment_method.gateway).to receive(:retrieve_configuration).and_return(configuration)
+      end
+
+      it "returns true when none of the products are excluded" do
+        is_expected.to be(true)
       end
     end
   end
