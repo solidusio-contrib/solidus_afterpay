@@ -88,9 +88,10 @@ If you want to override this logic, adding/removing attributes, you can provide 
 ### Express checkout from the cart
 
 An Afterpay button can also be included on the cart view to enable express checkouts:
+> Products should always be an array! Even for a single item.
 
 ```ruby
-render "solidus_afterpay/afterpay_checkout_button"
+<%= render "solidus_afterpay/afterpay_checkout_button", products: [<product>] %>
 ```
 
 ### Afterpay Messaging
@@ -99,10 +100,13 @@ Afterpay offers an on-site messaging component to notify the customer that there
 
 To add the `Afterpay messaging` simply add the `Afterpay messaging partial` into your `html.erb` file, like this.
 
-You need to provide the product as well, so you can exclude products from `Afterpay messaging`.
+You need to provide the products as well, so you can exclude products from `Afterpay messaging`. It is required to
+add the product in an array for example: `products: [<product>]`, or for multiple products: `products: [<product1>, <product2>]`.
+
+If you only have the order you can do it like this `products: order.line_items.map { |item| item.variant.product }`.
 
 ```erb
-<%= render "spree/shared/afterpay_messaging", min: nil, max: nil, product: <Product>, data: { amount: <Product price>, locale: "en_US", currency: "USD" } %>
+<%= render "spree/shared/afterpay_messaging", min: nil, max: nil, products: [<Product>], data: { amount: <Product price>, locale: "en_US", currency: "USD" } %>
 ```
 
 The amount, locale and currency are required in order to work properly.
@@ -116,7 +120,7 @@ The min attribute is to configure from which amount Afterpay should be available
 For example if you would write...
 
 ```erb
-<%= render "spree/shared/afterpay_messaging", min: nil, max: 25, product: <Product>, data: { amount: <Product price>, locale: "en_US", currency: "USD" } %>
+<%= render "spree/shared/afterpay_messaging", min: nil, max: 25, products: [<Product>], data: { amount: <Product price>, locale: "en_US", currency: "USD" } %>
 ```
 
 And a product price is `28.99`, Afterpay will display on that product that Afterpay is only available for orders between 1$ and 25$.
@@ -130,7 +134,7 @@ Click [here](https://developers.afterpay.com/afterpay-online/docs/advanced-usage
 If you would like to change the size of the Afterpay messaging you simply add size to the `data` hash. For example...
 
 ```erb
-<%= render "spree/shared/afterpay_messaging", min: nil, max: nil, product: <Product>, data: { amount: <Product price>, locale: "en_US", currency: "USD", size: "sm" } %>
+<%= render "spree/shared/afterpay_messaging", min: nil, max: nil, product: [<Product>], data: { amount: <Product price>, locale: "en_US", currency: "USD", size: "sm" } %>
 ```
 
 ## Development

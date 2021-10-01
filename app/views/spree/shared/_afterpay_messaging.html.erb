@@ -1,4 +1,4 @@
-<% unless ::SolidusAfterpay::PaymentMethod.active.first.excluded_product?(product) %>
+<% if products.none? { |product| ::SolidusAfterpay::PaymentMethod.active.first.excluded_product?(product) } %>
   <% content_for :head do %>
     <script
       src="https://js.afterpay.com/afterpay-1.x.js"

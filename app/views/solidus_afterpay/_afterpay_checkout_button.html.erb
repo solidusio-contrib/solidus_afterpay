@@ -1,8 +1,8 @@
 <% payment_method = SolidusAfterpay::PaymentMethod.active.first unless local_assigns[:payment_method] %>
 
-<%= render partial: 'solidus_afterpay/afterpay_javascript', locals: { payment_method: payment_method } %>
+<%= render partial: 'solidus_afterpay/afterpay_javascript', locals: { payment_method: payment_method } if Rails.env != "test" %>
 
-<% if payment_method.present? %>
+<% if payment_method.present? && products.none? { |product| ::SolidusAfterpay::PaymentMethod.active.first.excluded_product?(product) }  %>
   <button type="button" id="afterpay-button" data-afterpay-entry-point="cart" data-order-number="<%= @order.number %>" data-payment-method-id="<%= payment_method.id %>">
     <%= I18n.t('solidus_afterpay.express_checkout.button') %>
   </button>
