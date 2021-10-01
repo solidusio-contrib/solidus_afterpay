@@ -30,7 +30,7 @@ module SolidusAfterpay
         )
         result = response.body
       end
-
+      
       ActiveMerchant::Billing::Response.new(true, 'Transaction approved', result, authorization: result[:id])
     rescue ::Afterpay::BaseError => e
       message = e.message
@@ -39,6 +39,7 @@ module SolidusAfterpay
         message = I18n.t('solidus_afterpay.payment_declined')
         error_code = 'payment_declined'
       end
+      ::Afterpay::API::Payment::Reversal.call(token: result[:token])
       ActiveMerchant::Billing::Response.new(false, message, {}, error_code: error_code)
     end
 
@@ -58,6 +59,7 @@ module SolidusAfterpay
 
       ActiveMerchant::Billing::Response.new(true, 'Transaction captured', result, authorization: result.id)
     rescue ::Afterpay::BaseError => e
+      ::Afterpay::API::Payment::Reversal.call(token: response.body[:token])
       ActiveMerchant::Billing::Response.new(false, e.message, {}, error_code: e.error_code)
     end
 
