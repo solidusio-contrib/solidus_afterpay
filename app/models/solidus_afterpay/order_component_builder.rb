@@ -98,8 +98,29 @@ module SolidusAfterpay
         price: ::Afterpay::Components::Money.new(
           amount: line_item.price.to_s,
           currency: line_item.currency
-        )
+        ),
+        preorder: pre_order?(line_item),
+        estimated_shipment_date: estimated_shipment_date(line_item)
       )
+    end
+
+    def estimated_shipment_date_product(line_item)
+      line_item.product.property("estimatedShipmentDate")
+    end
+
+    def estimated_shipment_date_variant(line_item)
+      line_item.variant.variant_properties.find{ |prop| prop.property.name == "estimatedShipmentDate" }&.value
+    end
+
+    def estimated_shipment_date(line_item)
+      @estimated_shipment_date ||=
+        (estimated_shipment_date_variant(line_item) || estimated_shipment_date_product(line_item))
+    end
+
+    def pre_order?(line_item)
+      return false if estimated_shipment_date(line_item).nil?
+
+      Time.zone.local(*estimated_shipment_date(line_item).split("-")) > Time.zone.now
     end
   end
 end
