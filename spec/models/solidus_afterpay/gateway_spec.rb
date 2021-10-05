@@ -21,7 +21,7 @@ RSpec.describe SolidusAfterpay::Gateway do
 
     let(:amount) { 1000 }
     let(:payment_source) { build(:afterpay_payment_source, token: order_token, payment_method: payment_method) }
-    let(:gateway_options) { {} }
+    let(:gateway_options) { { currency: 'USD' } }
 
     context 'with the immediate flow' do
       it 'returns a successful response' do
