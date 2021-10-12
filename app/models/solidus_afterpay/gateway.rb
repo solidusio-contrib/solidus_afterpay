@@ -33,6 +33,8 @@ module SolidusAfterpay
 
       ActiveMerchant::Billing::Response.new(true, 'Transaction approved', result, authorization: result[:id])
     rescue ::Afterpay::BaseError => e
+      ::Afterpay::API::Payment::Reversal.call(token: payment_source.token) if e.is_a?(::Afterpay::RequestTimeoutError)
+
       message = e.message
       error_code = e.error_code
       if message == 'Afterpay::PaymentRequiredError'
@@ -58,6 +60,11 @@ module SolidusAfterpay
 
       ActiveMerchant::Billing::Response.new(true, 'Transaction captured', result, authorization: result.id)
     rescue ::Afterpay::BaseError => e
+      if e.is_a?(::Afterpay::RequestTimeoutError)
+        payment_source = gateway_options[:originator].payment_source
+        ::Afterpay::API::Payment::Reversal.call(token: payment_source.token)
+      end
+
       ActiveMerchant::Billing::Response.new(false, e.message, {}, error_code: e.error_code)
     end
 
