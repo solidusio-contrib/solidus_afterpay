@@ -58,13 +58,13 @@ $(document).bind("afterpay.loaded", function () {
             order_number: orderNumber,
             payment_method_id: paymentMethodId,
           },
-        })
-          .success(function (response) {
+          success: function (response) {
             onSuccess(response);
-          })
-          .error(function (response) {
+          },
+          error: function (response) {
             onError(response);
-          });
+          }
+        })
       }
     });
   }
