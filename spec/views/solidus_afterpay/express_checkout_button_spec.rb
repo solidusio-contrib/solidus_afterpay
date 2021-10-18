@@ -1,35 +1,30 @@
 require "spec_helper"
 
 RSpec.describe "rendering afterpay express checkout button", type: :view do
-  let(:product) { create(:base_product) }
-  let(:second_product) { create(:base_product) }
-  let(:excluded_product) { create(:base_product) }
+  subject(:rendered) { render "solidus_afterpay/afterpay_checkout_button", payment_method: payment_method }
+
   let(:payment_method) { SolidusAfterpay::PaymentMethod.active.first }
-  let(:amount) { product.price }
-  let(:product_array) { [product] }
+  let(:order) { create(:order) }
 
   before do
-    create(:afterpay_payment_method, preferred_excluded_products: excluded_product.id.to_s)
-    assign(:order, create(:order))
-    render "solidus_afterpay/afterpay_checkout_button", products: product_array
+    create(:afterpay_payment_method)
+    assign(:order, order)
   end
 
-  context "when rendering afterpay express checkout button for a single product" do
+  context "when order is available for order" do
+    before do
+      allow(payment_method).to receive(:available_for_order?).with(order).and_return(true)
+    end
+
     it 'displays the afterpay express checkout button' do
       expect(rendered).to match("Checkout with Afterpay")
     end
   end
 
-  context "when rendering afterpay express checkout button for multiple products" do
-    let(:product_array) { [product, second_product] }
-
-    it 'displays the afterpay express checkout button' do
-      expect(rendered).to match("Checkout with Afterpay")
+  context "when order is not available for order" do
+    before do
+      allow(payment_method).to receive(:available_for_order?).with(order).and_return(false)
     end
-  end
-
-  context "when rendering afterpay express checkout button with an excluded product" do
-    let(:product_array) { [product, second_product, excluded_product] }
 
     it 'does not display the afterpay express checkout button' do
       expect(rendered).not_to match("Checkout with Afterpay")
