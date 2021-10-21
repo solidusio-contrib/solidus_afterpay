@@ -88,10 +88,9 @@ If you want to override this logic, adding/removing attributes, you can provide 
 ### Express checkout from the cart
 
 An Afterpay button can also be included on the cart view to enable express checkouts:
-> Products should always be an array! Even for a single item.
 
 ```ruby
-<%= render "solidus_afterpay/afterpay_checkout_button", products: [<product>] %>
+<%= render "solidus_afterpay/afterpay_checkout_button" %>
 ```
 
 ### Afterpay Messaging
