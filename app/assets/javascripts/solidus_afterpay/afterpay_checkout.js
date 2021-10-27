@@ -103,13 +103,13 @@ $(document).bind("afterpay.loaded", function () {
         payment_method_id: paymentMethodId,
         order_token: event.data.orderToken,
       },
-    })
-      .success(function (response) {
+      success: function (response) {
         window.location.href = response.redirect_url;
-      })
-      .error(function (response) {
+      },
+      error: function (response) {
         enableSubmit();
-      });
+      }
+    })
   }
 
   function onAfterpayCancel(event) {
