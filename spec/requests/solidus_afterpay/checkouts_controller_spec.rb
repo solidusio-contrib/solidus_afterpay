@@ -50,11 +50,11 @@ describe SolidusAfterpay::CheckoutsController, type: :request do
           end
 
           it 'returns the order_token' do
-            expect(JSON.parse(response.body)['token']).to eq(order_token)
+            expect(json_response['token']).to eq(order_token)
           end
 
           it 'returns the correct params' do
-            expect(JSON.parse(response.body)).to include('token', 'expires', 'redirectCheckoutUrl')
+            expect(json_response).to include('token', 'expires', 'redirectCheckoutUrl')
           end
 
           context 'when no redirect URLs are passed as params' do
@@ -140,7 +140,7 @@ describe SolidusAfterpay::CheckoutsController, type: :request do
           end
 
           it 'returns a resource not found error message' do
-            expect(JSON.parse(response.body)['error']).to eq('The resource you were looking for could not be found.')
+            expect(json_response['error']).to eq('The resource you were looking for could not be found.')
           end
         end
 
@@ -154,7 +154,7 @@ describe SolidusAfterpay::CheckoutsController, type: :request do
           end
 
           it 'returns a resource not found error message' do
-            expect(JSON.parse(response.body)['error']).to eq('The resource you were looking for could not be found.')
+            expect(json_response['error']).to eq('The resource you were looking for could not be found.')
           end
         end
 
@@ -202,11 +202,11 @@ describe SolidusAfterpay::CheckoutsController, type: :request do
           end
 
           it 'returns a resource not found error message' do
-            expect(JSON.parse(response.body)['error']).to eq(gateway_response_message)
+            expect(json_response['error']).to eq(gateway_response_message)
           end
 
           it 'returns the error_code' do
-            expect(JSON.parse(response.body)['errorCode']).to eq(gateway_response_error_code)
+            expect(json_response['errorCode']).to eq(gateway_response_error_code)
           end
         end
       end
