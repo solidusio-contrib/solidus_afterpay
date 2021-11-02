@@ -71,6 +71,32 @@ RSpec.describe SolidusAfterpay::Gateway do
           expect(response.error_code).to eq('payment_declined')
         end
       end
+
+      context 'with a timeout error' do
+        before do
+          allow(::Afterpay::API::Payment::Auth).to receive(:call).and_raise(
+            ::Afterpay::RequestTimeoutError.new('request_timeout'), 'Request Timeout'
+          )
+          allow(::Afterpay::API::Payment::Reversal).to receive(:call)
+        end
+
+        it 'returns an unsuccesfull response' do
+          is_expected.not_to be_success
+        end
+
+        it 'returns the error message from Afterpay in the response' do
+          expect(response.message).to eq('Request Timeout')
+        end
+
+        it 'returns the error_code from Afterpay in the response' do
+          expect(response.error_code).to eq('request_timeout')
+        end
+
+        it 'calls the ::Afterpay::API::Payment::Reversal with order token' do
+          response
+          expect(::Afterpay::API::Payment::Reversal).to have_received(:call).with(token: order_token)
+        end
+      end
     end
   end
 
@@ -151,6 +177,32 @@ RSpec.describe SolidusAfterpay::Gateway do
 
         it 'returns the error_code from Afterpay in the response' do
           expect(response.error_code).to eq('not_found')
+        end
+      end
+
+      context 'with a timeout error' do
+        before do
+          allow(::Afterpay::API::Payment::DeferredCapture).to receive(:call).and_raise(
+            ::Afterpay::RequestTimeoutError.new('request_timeout'), 'Request Timeout'
+          )
+          allow(::Afterpay::API::Payment::Reversal).to receive(:call)
+        end
+
+        it 'returns an unsuccesfull response' do
+          is_expected.not_to be_success
+        end
+
+        it 'returns the error message from Afterpay in the response' do
+          expect(response.message).to eq('Request Timeout')
+        end
+
+        it 'returns the error_code from Afterpay in the response' do
+          expect(response.error_code).to eq('request_timeout')
+        end
+
+        it 'calls the ::Afterpay::API::Payment::Reversal with order token' do
+          response
+          expect(::Afterpay::API::Payment::Reversal).to have_received(:call).with(token: order_token)
         end
       end
     end
