@@ -1,3 +1,3 @@
 # frozen_string_literal: true
 
-json.nil!
+json.call(payment_source, :id, :token, :created_at)
