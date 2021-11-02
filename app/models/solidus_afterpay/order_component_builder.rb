@@ -6,7 +6,7 @@ module SolidusAfterpay
   class OrderComponentBuilder
     attr_reader :order, :mode, :redirect_confirm_url, :redirect_cancel_url, :popup_origin_url
 
-    def initialize(order:, mode:, redirect_confirm_url:, redirect_cancel_url:, popup_origin_url:)
+    def initialize(order:, mode: nil, redirect_confirm_url: nil, redirect_cancel_url: nil, popup_origin_url: nil)
       @order = order
       @mode = mode
       @redirect_confirm_url = redirect_confirm_url
