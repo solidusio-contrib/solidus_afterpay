@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe SolidusAfterpay::CheckoutsController, type: :request do
+describe SolidusAfterpay::CheckoutsController do
   describe 'POST create' do
     subject(:request) { post '/solidus_afterpay/checkouts.json', params: params, headers: headers }
 
@@ -38,7 +38,7 @@ describe SolidusAfterpay::CheckoutsController, type: :request do
     end
 
     context 'when the use solidus api config is set to false' do
-      context 'when the user is logged in', with_signed_in_user: true do
+      context 'when the user is logged in', :with_signed_in_user do
         context 'with valid data' do
           before do
             allow(Spree::Order).to receive(:find_by!).with(number: order.number).and_return(order)
@@ -50,11 +50,11 @@ describe SolidusAfterpay::CheckoutsController, type: :request do
           end
 
           it 'returns the order_token' do
-            expect(JSON.parse(response.body)['token']).to eq(order_token)
+            expect(response.parsed_body['token']).to eq(order_token)
           end
 
           it 'returns the correct params' do
-            expect(JSON.parse(response.body)).to include('token', 'expires', 'redirectCheckoutUrl')
+            expect(response.parsed_body).to include('token', 'expires', 'redirectCheckoutUrl')
           end
 
           context 'when no redirect URLs are passed as params' do
@@ -140,7 +140,7 @@ describe SolidusAfterpay::CheckoutsController, type: :request do
           end
 
           it 'returns a resource not found error message' do
-            expect(JSON.parse(response.body)['error']).to eq('The resource you were looking for could not be found.')
+            expect(response.parsed_body['error']).to eq('The resource you were looking for could not be found.')
           end
         end
 
@@ -154,7 +154,7 @@ describe SolidusAfterpay::CheckoutsController, type: :request do
           end
 
           it 'returns a resource not found error message' do
-            expect(JSON.parse(response.body)['error']).to eq('The resource you were looking for could not be found.')
+            expect(response.parsed_body['error']).to eq('The resource you were looking for could not be found.')
           end
         end
 
@@ -202,16 +202,16 @@ describe SolidusAfterpay::CheckoutsController, type: :request do
           end
 
           it 'returns a resource not found error message' do
-            expect(JSON.parse(response.body)['error']).to eq(gateway_response_message)
+            expect(response.parsed_body['error']).to eq(gateway_response_message)
           end
 
           it 'returns the error_code' do
-            expect(JSON.parse(response.body)['errorCode']).to eq(gateway_response_error_code)
+            expect(response.parsed_body['errorCode']).to eq(gateway_response_error_code)
           end
         end
       end
 
-      context 'when the user is a guest user', with_guest_session: true do
+      context 'when the user is a guest user', :with_guest_session do
         it 'returns a 201 status code' do
           request
           expect(response).to have_http_status(:created)
@@ -226,7 +226,7 @@ describe SolidusAfterpay::CheckoutsController, type: :request do
       end
     end
 
-    context 'when the use solidus api config is set to true', use_solidus_api: true do
+    context 'when the use solidus api config is set to true', :use_solidus_api do
       context 'when the user is logged in' do
         let(:headers) { { Authorization: "Bearer #{user.spree_api_key}" } }
 

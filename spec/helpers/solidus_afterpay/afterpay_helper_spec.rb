@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe SolidusAfterpay::AfterpayHelper, type: :helper do
+RSpec.describe SolidusAfterpay::AfterpayHelper do
   describe '#include_afterpay_js' do
     subject { helper.include_afterpay_js(test_mode: test_mode) }
 

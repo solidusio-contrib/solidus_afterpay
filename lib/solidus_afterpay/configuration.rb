@@ -41,7 +41,14 @@ module SolidusAfterpay
       SolidusAfterpay::BaseController
     end
 
-    delegate :shipping_rate_builder_service_class, to: :configuration
-    delegate :update_order_attributes_service_class, to: :configuration
+    # rubocop:disable Rails/Delegate
+    def shipping_rate_builder_service_class
+      configuration.shipping_rate_builder_service_class
+    end
+
+    def update_order_attributes_service_class
+      configuration.update_order_attributes_service_class
+    end
+    # rubocop:enable Rails/Delegate
   end
 end

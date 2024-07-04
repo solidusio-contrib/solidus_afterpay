@@ -5,7 +5,7 @@ require 'spec_helper'
 describe SolidusAfterpay::ShippingRateBuilderService do
   subject(:service) { described_class.call(order: order) }
 
-  let(:order) { ::Spree::TestingSupport::OrderWalkthrough.up_to(:delivery) }
+  let(:order) { Spree::TestingSupport::OrderWalkthrough.up_to(:delivery) }
 
   context 'when the order is in a valid state' do
     it 'returns the afterpay compliant shipping rate object' do

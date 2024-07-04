@@ -7,7 +7,7 @@ describe SolidusAfterpay::BaseService do
     subject(:service) { described_class.new.call }
 
     it 'raises a not implemented error' do
-      expect { service }.to raise_error(::NotImplementedError)
+      expect { service }.to raise_error(NotImplementedError)
     end
   end
 end

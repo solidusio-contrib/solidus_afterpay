@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe SolidusAfterpay::CallbacksController, type: :request do
+describe SolidusAfterpay::CallbacksController do
   describe 'GET cancel' do
     subject(:request) { get '/solidus_afterpay/callbacks/cancel', params: params }
 
@@ -29,7 +29,7 @@ describe SolidusAfterpay::CallbacksController, type: :request do
 
     let(:params) { { orderToken: order_token, order_number: order_number, payment_method_id: payment_method_id } }
 
-    context 'when the user is logged in', with_signed_in_user: true do
+    context 'when the user is logged in', :with_signed_in_user do
       context 'with valid data' do
         it 'redirects to the order next checkout state page' do
           request
@@ -110,7 +110,7 @@ describe SolidusAfterpay::CallbacksController, type: :request do
       end
     end
 
-    context 'when the user is a guest user', with_guest_session: true do
+    context 'when the user is a guest user', :with_guest_session do
       it 'redirects to the order next checkout state page' do
         request
         expect(response).to redirect_to('/checkout/confirm')
