@@ -3,6 +3,8 @@
 # Solidus Afterpay
 
 <!-- Explain what your extension does. -->
+> [!IMPORTANT] 
+> This gem still depends on the legacy [solidus_frontend](https://github.com/solidusio/solidus_frontend) gem being available in the Solidus application.
 
 ## Installation
 
@@ -43,6 +45,7 @@ Spree::Config.configure do |config|
     'afterpay_credentials', {
       merchant_id: ENV['AFTERPAY_MERCHANT_ID'],
       secret_key: ENV['AFTERPAY_SECRET_KEY'],
+      test_mode: ENV.fetch('AFTERPAY_ENVIRONMENT', '') != 'production'
     }
   )
 end
