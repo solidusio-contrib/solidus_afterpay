@@ -6,7 +6,7 @@ describe SolidusAfterpay::ShippingRatePresenter do
   let(:order) { create(:order_with_line_items ) }
   let(:shipment) { create(:shipment, order: order) }
   let(:shipping_rate) { create(:shipping_rate, cost: 5, shipment: shipment) }
-  let(:shipping_rate_tax) { ::Spree::ShippingRateTax.create(amount: 0.75, shipping_rate: shipping_rate) }
+  let(:shipping_rate_tax) { Spree::ShippingRateTax.create(amount: 0.75, shipping_rate: shipping_rate) }
 
   before { shipping_rate.taxes << shipping_rate_tax }
 

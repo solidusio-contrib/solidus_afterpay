@@ -74,10 +74,10 @@ RSpec.describe SolidusAfterpay::Gateway do
 
       context 'with a timeout error' do
         before do
-          allow(::Afterpay::API::Payment::Auth).to receive(:call).and_raise(
-            ::Afterpay::RequestTimeoutError.new('request_timeout'), 'Request Timeout'
+          allow(Afterpay::API::Payment::Auth).to receive(:call).and_raise(
+            Afterpay::RequestTimeoutError.new('request_timeout'), 'Request Timeout'
           )
-          allow(::Afterpay::API::Payment::Reversal).to receive(:call)
+          allow(Afterpay::API::Payment::Reversal).to receive(:call)
         end
 
         it 'returns an unsuccesfull response' do
@@ -94,7 +94,7 @@ RSpec.describe SolidusAfterpay::Gateway do
 
         it 'calls the ::Afterpay::API::Payment::Reversal with order token' do
           response
-          expect(::Afterpay::API::Payment::Reversal).to have_received(:call).with(token: order_token)
+          expect(Afterpay::API::Payment::Reversal).to have_received(:call).with(token: order_token)
         end
       end
     end
@@ -182,10 +182,10 @@ RSpec.describe SolidusAfterpay::Gateway do
 
       context 'with a timeout error' do
         before do
-          allow(::Afterpay::API::Payment::DeferredCapture).to receive(:call).and_raise(
-            ::Afterpay::RequestTimeoutError.new('request_timeout'), 'Request Timeout'
+          allow(Afterpay::API::Payment::DeferredCapture).to receive(:call).and_raise(
+            Afterpay::RequestTimeoutError.new('request_timeout'), 'Request Timeout'
           )
-          allow(::Afterpay::API::Payment::Reversal).to receive(:call)
+          allow(Afterpay::API::Payment::Reversal).to receive(:call)
         end
 
         it 'returns an unsuccesfull response' do
@@ -202,7 +202,7 @@ RSpec.describe SolidusAfterpay::Gateway do
 
         it 'calls the ::Afterpay::API::Payment::Reversal with order token' do
           response
-          expect(::Afterpay::API::Payment::Reversal).to have_received(:call).with(token: order_token)
+          expect(Afterpay::API::Payment::Reversal).to have_received(:call).with(token: order_token)
         end
       end
     end
@@ -481,7 +481,7 @@ RSpec.describe SolidusAfterpay::Gateway do
 
     context 'with invalid response' do
       before do
-        allow(::Afterpay::API::Configuration::Retrieve).to receive(:call).and_raise(::Afterpay::BaseError.new(nil))
+        allow(Afterpay::API::Configuration::Retrieve).to receive(:call).and_raise(Afterpay::BaseError.new(nil))
       end
 
       it 'retrieves the afterpay configuration' do

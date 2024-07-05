@@ -114,7 +114,7 @@ module SolidusAfterpay
 
     def estimated_shipment_date(line_item)
       @estimated_shipment_date ||=
-        (estimated_shipment_date_variant(line_item) || estimated_shipment_date_product(line_item))
+        estimated_shipment_date_variant(line_item) || estimated_shipment_date_product(line_item)
     end
 
     def pre_order?(line_item)

@@ -12,3 +12,12 @@ RSpec/MultipleMemoizedHelpers:
 
 RSpec/NestedGroups:
   Enabled: false
+
+Rspec/RemoveConst:
+  Enabled: false
+
+RSpec/DescribeClass:
+  Enabled: false
+
+Gemspec/DevelopmentDependencies:
+  Enabled: false

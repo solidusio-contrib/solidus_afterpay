@@ -7,7 +7,7 @@ RSpec.configure do |config|
     end.uniq.first
   end
 
-  config.before(:each, use_solidus_api: true) do
+  config.before(:each, :use_solidus_api) do
     SolidusAfterpay.configure do |c|
       c.use_solidus_api = true
     end
@@ -19,7 +19,7 @@ RSpec.configure do |config|
     load source_location
   end
 
-  config.after(:each, use_solidus_api: true) do
+  config.after(:each, :use_solidus_api) do
     SolidusAfterpay.configure do |c|
       c.use_solidus_api = false
     end

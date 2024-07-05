@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Spree::Order, type: :model do
+RSpec.describe Spree::Order do
   let(:store) { create(:store) }
   let(:user) { create(:user, email: "solidus@example.com") }
   let(:order) { create(:order, user: user, store: store) }
@@ -55,12 +55,12 @@ RSpec.describe Spree::Order, type: :model do
       subject { order.available_payment_methods }
 
       let!(:first_method) {
-        FactoryBot.create(:payment_method, available_to_users: true,
-                                               available_to_admin: true)
+        create(:payment_method, available_to_users: true,
+          available_to_admin: true)
       }
       let!(:second_method) {
-        FactoryBot.create(:payment_method, available_to_users: true,
-                                               available_to_admin: true)
+        create(:payment_method, available_to_users: true,
+          available_to_admin: true)
       }
 
       before do
@@ -120,9 +120,7 @@ RSpec.describe Spree::Order, type: :model do
         before { order.update!(store: store_with_payment_methods) }
 
         it 'returns only the matching payment methods for that store' do
-          expect(order.available_payment_methods).to match_array(
-            [payment_method_with_store]
-          )
+          expect(order.available_payment_methods).to contain_exactly(payment_method_with_store)
         end
 
         context 'when the store has an extra payment method unavailable to users' do
@@ -137,9 +135,7 @@ RSpec.describe Spree::Order, type: :model do
           end
 
           it 'returns only the payment methods available to users for that store' do
-            expect(order.available_payment_methods).to match_array(
-              [payment_method_with_store]
-            )
+            expect(order.available_payment_methods).to contain_exactly(payment_method_with_store)
           end
         end
       end
@@ -148,9 +144,8 @@ RSpec.describe Spree::Order, type: :model do
         before { order.update!(store: store_without_payment_methods) }
 
         it 'returns all matching payment methods regardless of store' do
-          expect(order.available_payment_methods).to match_array(
-            [payment_method_with_store, payment_method_without_store]
-          )
+          expect(order.available_payment_methods).to contain_exactly(payment_method_with_store,
+            payment_method_without_store)
         end
       end
     end

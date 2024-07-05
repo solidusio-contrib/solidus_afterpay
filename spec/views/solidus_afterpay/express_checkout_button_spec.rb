@@ -1,6 +1,6 @@
 require "spec_helper"
 
-RSpec.describe "rendering afterpay express checkout button", type: :view do
+RSpec.describe "rendering afterpay express checkout button" do
   subject(:rendered) { render "solidus_afterpay/afterpay_checkout_button", payment_method: payment_method }
 
   let(:payment_method) { SolidusAfterpay::PaymentMethod.active.first }

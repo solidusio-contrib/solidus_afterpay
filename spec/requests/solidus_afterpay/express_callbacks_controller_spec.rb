@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe SolidusAfterpay::ExpressCallbacksController, type: :request do
+describe SolidusAfterpay::ExpressCallbacksController do
   describe 'PATCH update' do
     subject(:request) { patch "/solidus_afterpay/express_callbacks/#{order.number}.json", params: params }
 
@@ -31,14 +31,14 @@ describe SolidusAfterpay::ExpressCallbacksController, type: :request do
       end
     end
 
-    context 'when the user is a guest user', with_guest_session: true do
+    context 'when the user is a guest user', :with_guest_session do
       it 'returns 200 status code' do
         request
         expect(response).to have_http_status(:ok)
       end
     end
 
-    context 'when the user is logged in', with_signed_in_user: true do
+    context 'when the user is logged in', :with_signed_in_user do
       let(:update_order_address_service_result) { true }
 
       before do
@@ -120,14 +120,14 @@ describe SolidusAfterpay::ExpressCallbacksController, type: :request do
       end
     end
 
-    context 'when the user is a guest user', with_guest_session: true do
+    context 'when the user is a guest user', :with_guest_session do
       it 'returns 200 status code' do
         request
         expect(response).to have_http_status(:ok)
       end
     end
 
-    context 'when the user is logged in', with_signed_in_user: true do
+    context 'when the user is logged in', :with_signed_in_user do
       it 'returns 200 status code' do
         request
         expect(response).to have_http_status(:ok)
@@ -151,7 +151,7 @@ describe SolidusAfterpay::ExpressCallbacksController, type: :request do
 
       it 'redirects the user to the checkout confirm step' do
         request
-        expect(JSON.parse(response.body)['redirect_url']).to eq('http://www.example.com/checkout/confirm')
+        expect(response.parsed_body['redirect_url']).to eq('http://www.example.com/checkout/confirm')
       end
 
       context 'when the update order attributes service fails' do

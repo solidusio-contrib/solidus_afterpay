@@ -55,7 +55,11 @@ module SolidusAfterpay
     end
 
     def payment_method
-      @payment_method ||= SolidusAfterpay::PaymentMethod.active.find(params[:payment_method_id])
+      @payment_method ||= if params[:payment_method_id]
+                            SolidusAfterpay::PaymentMethod.active.find(params[:payment_method_id])
+                          else
+                            SolidusAfterpay::PaymentMethod.active.first
+                          end
     end
   end
 end

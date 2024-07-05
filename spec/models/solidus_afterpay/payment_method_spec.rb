@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe SolidusAfterpay::PaymentMethod, type: :model do
+RSpec.describe SolidusAfterpay::PaymentMethod do
   let(:payment_method) { described_class.new }
 
   describe "#gateway_class" do
@@ -84,7 +84,7 @@ RSpec.describe SolidusAfterpay::PaymentMethod, type: :model do
     let(:payment_method) { create(:afterpay_payment_method, preferred_excluded_products: excluded_product_ids) }
     let(:order) {
       build(:order_with_line_items, currency: order_currency,
-     line_items_attributes: line_items_attributes)
+        line_items_attributes: line_items_attributes)
     }
     let(:line_items_attributes) do
       [{ product: product }]

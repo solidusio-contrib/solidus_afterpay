@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe SolidusAfterpay::PaymentSource, type: :model do
+RSpec.describe SolidusAfterpay::PaymentSource do
   let(:payment_source) { described_class.new }
 
   describe '#actions' do

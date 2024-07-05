@@ -1,6 +1,5 @@
 require "spec_helper"
-
-RSpec.describe "rendering afterpay messaging", type: :view do
+RSpec.describe "rendering afterpay messaging" do
   let(:product) { create(:base_product) }
   let(:second_product) { create(:base_product) }
   let(:excluded_product) { create(:base_product) }

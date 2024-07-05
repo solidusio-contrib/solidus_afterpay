@@ -10,9 +10,9 @@ RSpec.describe SolidusAfterpay::UserAgentGenerator do
 
     before do
       stub_const('SolidusAfterpay::VERSION', '0.1.0')
-      allow(::Spree).to receive(:solidus_gem_version).and_return('3.0.1')
+      allow(Spree).to receive(:solidus_gem_version).and_return('3.0.1')
       stub_const('RUBY_VERSION', '2.6.6')
-      allow(::Spree::Store).to receive(:default).and_return(default_store)
+      allow(Spree::Store).to receive(:default).and_return(default_store)
     end
 
     it 'includes the production javascript' do
